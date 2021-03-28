@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Request;
 use App\Models\Navigation;
 use App\Models\Vague;
 use App\Models\Bac;
@@ -21,6 +22,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
     }
 
     public function hook_before(&$received_data) {
+        $received_data = Request::all();
         $this->navigation = new \stdClass();
         $this->navigation->customer_chat_id = $received_data['message']['from']['id'];
         $this->navigation->customer_message = isset($received_data['message']['text']) ? $received_data['message']['text'] : 'picture_send';
