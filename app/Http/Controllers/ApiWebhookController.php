@@ -54,26 +54,26 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
             $data_collected[$var_name] = $value;
             $to_update = array('last_date' => date('Y-m-d H:i:s'), 'data_collected' => json_encode($data_collected));
         }
-        $nav->update($to_update);
+        $nav->save($to_update);
     }
     
     private function update_vague_or_bac_nbre($id, $nbre, $is_vague = false, $is_nbre_sortie = true) {
         if ($is_vague) {
             $vague = Vague::findOrFail($id);
             if ($is_nbre_sortie) {
-                $vague->update(array('nbre_sortie' => ($vague->nbre_sortie + $nbre)));
+                $vague->save(array('nbre_sortie' => ($vague->nbre_sortie + $nbre)));
             } else {
-                $vague->update(array('nbre_perte' => ($vague->nbre_perte + $nbre)));
+                $vague->save(array('nbre_perte' => ($vague->nbre_perte + $nbre)));
             }
         } else {
             $bac = Bac::findOrFail($id);
-            $bac->update(array('nbre' => ($bac->nbre + $nbre)));
+            $bac->save(array('nbre' => ($bac->nbre + $nbre)));
         }
     }
 
     private function update_aliment_stock($id, $qte) {
         $aliment = Aliment::findOrFail($id);
-        $aliment->update(array('stock_en_g' => $aliment->stock_en_g + $qte));
+        $aliment->save(array('stock_en_g' => $aliment->stock_en_g + $qte));
     }
     
     private function get_user_and_dataSaved() {
@@ -99,7 +99,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
         } else {
             $this->navigation->customer_current_step = $navigation_save->step;
             $this->navigation->customer_next_step = "UNDEFINE_UNDEFINE";
-            $navigation_save->update(array('last_date' => date('Y-m-d H:i:s')));
+            $navigation_save->save(array('last_date' => date('Y-m-d H:i:s')));
         }
     }
     
@@ -107,11 +107,11 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
         $value = $this->navigation->customer_message;
         if (strcmp(trim(strtoupper($value)), "RESET") == 0) {
             $this->navigation->customer_next_step = $this->getStepCode("HOME_HOME");
-            $this->update_data_collected("home", $value, true);
+            $this->save_data_collected("home", $value, true);
         } else if (empty($this->get_data_by("*", "users", "telegram_id = " . $this->navigation->customer_chat_id))) { // user not found
             $this->navigation->customer_next_step = $this->getStepCode("HOME_NOTFOUND");
             $this->navigation->error = true;
-            $this->update_data_collected("home", $value, true);
+            $this->save_data_collected("home", $value, true);
         } else {
             if (strcasecmp($this->navigation->customer_current_step, $this->navigation->customer_next_step) != 0) {
                 $val = explode("_", $this->navigation->customer_current_step);
@@ -121,7 +121,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                     case "HOME":
                         if ((ctype_digit($value) && $value <= 8 && 0 < $value)) {
                             $this->navigation->customer_next_step = $this->getStepCode("HOME_$value");
-                            $this->update_data_collected("home", $value);
+                            $this->save_data_collected("home", $value);
                         } else {
                             $this->navigation->customer_next_step = $this->navigation->customer_current_step;
                             $this->navigation->error = true;
@@ -132,7 +132,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                             $bac = $this->get_data_by("*", "bacs", "id = $value");
                             if (!empty($bac)) {
                                 $this->navigation->customer_next_step = $this->getStepCode($service . "_BAC");
-                                $this->update_data_collected("bac_source", $value);
+                                $this->save_data_collected("bac_source", $value);
                             } else {
                                 $this->navigation->customer_next_step = $this->navigation->customer_current_step;
                                 $this->navigation->error = true;
@@ -147,7 +147,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                             $bac = $this->get_data_by("*", "bacs", "id = $value");
                             if (!empty($bac)) {
                                 $this->navigation->customer_next_step = $this->getStepCode($service . "_BAC2");
-                                $this->update_data_collected("bac_destination", $value);
+                                $this->save_data_collected("bac_destination", $value);
                             } else {
                                 $this->navigation->customer_next_step = $this->navigation->customer_current_step;
                                 $this->navigation->error = true;
@@ -162,7 +162,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                             $vague = $this->get_data_by("*", "vagues", "id = $value");
                             if (!empty($vague)) {
                                 $this->navigation->customer_next_step = $this->getStepCode($service . "_VAGUE");
-                                $this->update_data_collected("vague", $value);
+                                $this->save_data_collected("vague", $value);
                             } else {
                                 $this->navigation->customer_next_step = $this->navigation->customer_current_step;
                                 $this->navigation->error = true;
@@ -177,7 +177,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                             $aliment = $this->get_data_by("*", "aliments", "id = $value");
                             if (!empty($aliment)) {
                                 $this->navigation->customer_next_step = $this->getStepCode($service . "_ALIMENT");
-                                $this->update_data_collected("aliment", $value);
+                                $this->save_data_collected("aliment", $value);
                             } else {
                                 $this->navigation->customer_next_step = $this->navigation->customer_current_step;
                                 $this->navigation->error = true;
@@ -192,7 +192,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                             $flux = $this->get_data_by("*", "flux_movements", "id = $value");
                             if (!empty($flux)) {
                                 $this->navigation->customer_next_step = $this->getStepCode($service . "_ID");
-                                $this->update_data_collected("id", $value);
+                                $this->save_data_collected("id", $value);
                             } else {
                                 $this->navigation->customer_next_step = $this->navigation->customer_current_step;
                                 $this->navigation->error = true;
@@ -205,7 +205,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                     case "QTE":
                         if ((ctype_digit($value)) && $value > 0) {
                             $this->navigation->customer_next_step = $this->getStepCode($service . "_QTE");
-                            $this->update_data_collected("qte_gramme", $value);
+                            $this->save_data_collected("qte_gramme", $value);
                         } else {
                             $this->navigation->customer_next_step = $this->navigation->customer_current_step;
                             $this->navigation->error = true;
@@ -214,7 +214,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                     case "PDU":
                         if ((is_numeric($value))) {
                             $this->navigation->customer_next_step = $this->getStepCode($service . "_PDU");
-                            $this->update_data_collected("poids_unite", $value);
+                            $this->save_data_collected("poids_unite", $value);
                         } else {
                             $this->navigation->customer_next_step = $this->navigation->customer_current_step;
                             $this->navigation->error = true;
@@ -223,7 +223,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                     case "PU":
                         if ((ctype_digit($value)) && $value > 0) {
                             $this->navigation->customer_next_step = $this->getStepCode($service . "_PU");
-                            $this->update_data_collected("cout_unite", $value);
+                            $this->save_data_collected("cout_unite", $value);
                         } else {
                             $this->navigation->customer_next_step = $this->navigation->customer_current_step;
                             $this->navigation->error = true;
@@ -232,7 +232,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                     case "PUKG":
                         if ((ctype_digit($value)) && $value > 0) {
                             $this->navigation->customer_next_step = $this->getStepCode($service . "_PUKG");
-                            $this->update_data_collected("cout_kg", $value);
+                            $this->save_data_collected("cout_kg", $value);
                         } else {
                             $this->navigation->customer_next_step = $this->navigation->customer_current_step;
                             $this->navigation->error = true;
@@ -241,7 +241,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                     case "PKG":
                         if ((ctype_digit($value)) && $value > 0) {
                             $this->navigation->customer_next_step = $this->getStepCode($service . "_PKG");
-                            $this->update_data_collected("poids_kg", $value);
+                            $this->save_data_collected("poids_kg", $value);
                         } else {
                             $this->navigation->customer_next_step = $this->navigation->customer_current_step;
                             $this->navigation->error = true;
@@ -250,7 +250,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                     case "NBRE":
                         if ((ctype_digit($value)) && $value != 0) {
                             $this->navigation->customer_next_step = $this->getStepCode($service . "_NBRE");
-                            $this->update_data_collected("nbre", $value);
+                            $this->save_data_collected("nbre", $value);
                         } else {
                             $this->navigation->customer_next_step = $this->navigation->customer_current_step;
                             $this->navigation->error = true;
@@ -259,7 +259,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                     case "NBREP":
                         if ((ctype_digit($value)) && $value > 0) {
                             $this->navigation->customer_next_step = $this->getStepCode($service . "_NBREP");
-                            $this->update_data_collected("nbre_photo", $value);
+                            $this->save_data_collected("nbre_photo", $value);
                         } else {
                             $this->navigation->customer_next_step = $this->navigation->customer_current_step;
                             $this->navigation->error = true;
@@ -267,7 +267,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         break;
                     case "MESSAGE":
                         $this->navigation->customer_next_step = $this->getStepCode($service . "_MESSAGE");
-                        $this->update_data_collected("description", $value);
+                        $this->save_data_collected("description", $value);
                         break;
                     case "PHOTO":
                         if (strcmp($this->navigation->file_name, "NO_FILE") == 0) {
@@ -280,7 +280,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                             for ($i = 1; $i <= $nbre; $i++) {
                                 $next_to_save = "photo_$i";
                                 if (!isset($data[$next_to_save])) {
-                                    $this->update_data_collected($next_to_save, $this->navigation->file_name);
+                                    $this->save_data_collected($next_to_save, $this->navigation->file_name);
                                     $position_suivante = ($i + 1);
                                     break;
                                 }
@@ -295,7 +295,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                     case "DATE1":
                         if ((is_sql_date($value))) {
                             $this->navigation->customer_next_step = $this->getStepCode($service . "_DATE1");
-                            $this->update_data_collected("date_debut", $value);
+                            $this->save_data_collected("date_debut", $value);
                         } else {
                             $this->navigation->customer_next_step = $this->navigation->customer_current_step;
                             $this->navigation->error = true;
@@ -304,14 +304,14 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                     case "DATE2":
                         if ((is_sql_date($value))) {
                             $this->navigation->customer_next_step = $this->getStepCode($service . "_DATE2");
-                            $this->update_data_collected("date_fin", $value);
+                            $this->save_data_collected("date_fin", $value);
                         } else {
                             $this->navigation->customer_next_step = $this->navigation->customer_current_step;
                             $this->navigation->error = true;
                         }
                         break;
                 }
-                $this->update_where("chat_id = '" . $this->navigation->customer_chat_id . "'", 'navigation', array('last_date' => date('Y-m-d H:i:s'), 'step' => $this->navigation->customer_next_step));
+                $this->save_where("chat_id = '" . $this->navigation->customer_chat_id . "'", 'navigation', array('last_date' => date('Y-m-d H:i:s'), 'step' => $this->navigation->customer_next_step));
             }
         }
     }
@@ -352,22 +352,22 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         $save_flux['type_flux'] = "POISSON";
                         $save_flux['statut'] = "ACHAT";
                         $save_flux['qte_gramme'] = $vague_save['poids_unite'];
-                        $this->update_vague_or_bac_nbre($save_flux['bac_source'], $save_flux['nbre']);
+                        $this->save_vague_or_bac_nbre($save_flux['bac_source'], $save_flux['nbre']);
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
                     case "PERTE-POISSON":
                         $save = true;
                         $save_flux['type_flux'] = "POISSON";
                         $save_flux['statut'] = "PERTE";
-                        $this->update_vague_or_bac_nbre($save_flux['bac_source'], (-1) * $save_flux['nbre']);
-                        $this->update_vague_or_bac_nbre($save_flux['vague'], $save_flux['nbre'], true, false);
+                        $this->save_vague_or_bac_nbre($save_flux['bac_source'], (-1) * $save_flux['nbre']);
+                        $this->save_vague_or_bac_nbre($save_flux['vague'], $save_flux['nbre'], true, false);
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
                     case "NUTRITION-POISSON":
                         $save = true;
                         $save_flux['type_flux'] = "ALIMENT";
                         $save_flux['statut'] = "NUTRITION";
-                        $this->update_aliment_stock($save_flux['aliment'], (-1) * $save_flux['qte_gramme']);
+                        $this->save_aliment_stock($save_flux['aliment'], (-1) * $save_flux['qte_gramme']);
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
                     case "ACHAT-ALIMENT":
@@ -375,23 +375,23 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         $save_flux['type_flux'] = "ALIMENT";
                         $save_flux['statut'] = "ACHAT";
                         $save_flux['qte_gramme'] = $user_data['poids_kg']*1000;
-                        $this->update_aliment_stock($save_flux['aliment'], ($user_data['qte_gramme']));
+                        $this->save_aliment_stock($save_flux['aliment'], ($user_data['qte_gramme']));
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
                     case "CHANGEMENT-BAC":
                         $save = true;
                         $save_flux['type_flux'] = "POISSON";
                         $save_flux['statut'] = "CHANGEMENT_BAC";
-                        $this->update_vague_or_bac_nbre($save_flux['bac_source'], (-1) * $save_flux['nbre']);
-                        $this->update_vague_or_bac_nbre($save_flux['bac_destination'], $save_flux['nbre']);
+                        $this->save_vague_or_bac_nbre($save_flux['bac_source'], (-1) * $save_flux['nbre']);
+                        $this->save_vague_or_bac_nbre($save_flux['bac_destination'], $save_flux['nbre']);
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
                     case "VENTE-POISSON":
                         $save = true;
                         $save_flux['type_flux'] = "POISSON";
                         $save_flux['statut'] = "VENTE";
-                        $this->update_vague_or_bac_nbre($save_flux['bac_source'], (-1) * $save_flux['nbre']);
-                        $this->update_vague_or_bac_nbre($save_flux['vague'], $save_flux['nbre'], true);
+                        $this->save_vague_or_bac_nbre($save_flux['bac_source'], (-1) * $save_flux['nbre']);
+                        $this->save_vague_or_bac_nbre($save_flux['vague'], $save_flux['nbre'], true);
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
                     case "PH0TO-PREUVE":
@@ -452,7 +452,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                     $flux = Flux::create($save_flux);
                     notify_after_action_flux($flux);
                 }
-                $this->update_data_collected('', '', true);
+                $this->save_data_collected('', '', true);
                 break;
             case "HOME":
                 $this->navigation->customer_message_answer = ""
