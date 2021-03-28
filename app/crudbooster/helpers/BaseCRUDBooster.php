@@ -1,5 +1,5 @@
 <?php
-namespace App\CRUDBooster\helpers;
+namespace App\Crudbooster\helpers;
 
 use crocodicstudio\crudbooster\helpers\CRUDBooster;
 
