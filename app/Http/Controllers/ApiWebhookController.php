@@ -93,7 +93,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
             $toSave['step'] = "HOME_HOME";
             $toSave['data_collected'] = json_encode(array());
             $toSave['last_date'] = date('Y-m-d H:i:s');
-            Navigation::create($toSave);
+            Navigation::save($toSave);
             $this->navigation->customer_current_step = "HOME_HOME";
             $this->navigation->customer_next_step = "HOME_HOME";
         } else {
@@ -402,7 +402,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                             $to_save_preuve['photo'] = $user_data['photo_' . $i];
                             $to_save_preuve['description'] = $user_data['description'];
                             $to_save_preuve['agent'] = $user_data['agent'];
-                            Preuve::create($to_save_preuve);
+                            Preuve::save($to_save_preuve);
                         }
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
@@ -449,7 +449,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         break;
                 }
                 if ($save) {
-                    $flux = Flux::create($save_flux);
+                    $flux = Flux::save($save_flux);
                     notify_after_action_flux($flux);
                 }
                 $this->save_data_collected('', '', true);
