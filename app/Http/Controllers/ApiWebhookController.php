@@ -87,7 +87,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
     
     private function getCurrentPosition() {
         $navigation_save = Navigation::where('chat_id',$this->navigation->customer_chat_id)->first();
-        if ($navigation_save) {
+        if (!$navigation_save) {
             $toSave['chat_id'] = "" . $this->navigation->customer_chat_id;
             $toSave['name'] = $this->navigation->customer_name;
             $toSave['step'] = "HOME_HOME";

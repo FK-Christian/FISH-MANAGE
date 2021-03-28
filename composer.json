@@ -27,14 +27,17 @@
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         },
-        "file":[
+        "files":[
             "app/helpers.php"
         ]
     },
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"
-        }
+        },
+        "files":[
+            "app/helpers.php"
+        ]
     },
     "scripts": {
         "post-autoload-dump": [
