@@ -350,7 +350,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         $vague_save['nbre_sortie'] = 0;
                         $vague_save['nbre_perte'] = 0;
                         $vague_save['description'] = $save_flux['description'];
-                        $save_flux['vague'] = $this->insert($vague_save, "vagues");
+                        $save_flux['vague'] = Vague::create($vague_save)->id; //$this->insert($vague_save, "vagues");
                         $save_flux['type_flux'] = "POISSON";
                         $save_flux['statut'] = "ACHAT";
                         $save_flux['qte_gramme'] = $vague_save['poids_unite'];
