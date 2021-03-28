@@ -26,25 +26,4 @@ class Navigation extends Model {
         'step' => 'required',
         'last_date' => 'required'
     ];
-
-    public function createdBy() {
-        return $this->belongsTo(User::class, 'created_by');
-    }
-
-    public function parent() {
-        return $this->belongsTo(Document::class, 'parent');
-    }
-
-    public function paidBy() {
-        return $this->belongsTo(User::class, 'paid_by');
-    }
-
-    public function verifiedBy() {
-        return $this->belongsTo(User::class, 'verified_by');
-    }
-
-    public function activities() {
-        return $this->hasMany(Activity::class, 'document_id', 'id')
-                        ->orderByDesc('id');
-    }
 }
