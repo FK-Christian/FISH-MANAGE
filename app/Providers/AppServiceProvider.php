@@ -14,7 +14,7 @@ class AppServiceProvider extends ServiceProvider {
      */
     public function register() {
         $loader = \Illuminate\Foundation\AliasLoader::getInstance();  
-        $loader->alias('CRUDBooster', 'App\Crudbooster\helper\BaseCRUDBooster');
+        $loader->alias('CRUDBooster', 'App\Crudbooster\helpers\BaseCRUDBooster');
     }
 
     /**
