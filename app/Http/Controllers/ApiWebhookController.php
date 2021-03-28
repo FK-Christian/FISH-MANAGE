@@ -14,7 +14,7 @@ use App\Models\CmsUser;
 use App\Models\Preuve;
 use App\Models\Flux;
 
-class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiController {
+class ApiWebhookController extends ApiController {
 
     private $navigation;
     
