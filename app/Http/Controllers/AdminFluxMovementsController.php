@@ -293,7 +293,11 @@
 	    */
 	    public function hook_after_add($id) {        
 	        //Your code here
-
+                $flux = \App\Models\Flux::where('id',$id)->first();
+                if($flux->type_flux == 'INVESTISSEMENT'){
+                    $investisserment = \App\Models\Investissement::where('id',$flux->investissement)->first();
+                    $investisserment->update(array('balance' => $investisserment->balance + $flux->cout_unite));
+                }
 	    }
 
 	    /* 
