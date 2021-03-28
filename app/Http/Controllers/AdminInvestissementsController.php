@@ -268,7 +268,7 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        //Your code here
-
+                $postdata['statut'] = ($postdata['statut'] == 'true');
 	    }
 
 	    /* 
@@ -293,7 +293,7 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 	        //Your code here
-
+                $postdata['statut'] = ($postdata['statut'] == 'true');
 	    }
 
 	    /* 
