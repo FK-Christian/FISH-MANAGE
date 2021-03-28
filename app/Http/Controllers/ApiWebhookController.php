@@ -105,7 +105,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
     
     private function evaluateInput() {
         $value = $this->navigation->customer_message;
-        $userCheck = CmsUser::where('id',$this->navigation->customer_chat_id)->first();
+        $userCheck = CmsUser::where('telegram_id',$this->navigation->customer_chat_id)->first();
         if (strcmp(trim(strtoupper($value)), "RESET") == 0) {
             $this->navigation->customer_next_step = $this->getStepCode("HOME_HOME");
             $this->update_data_collected("home", $value, true);
