@@ -339,6 +339,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                 switch (strtoupper($val[0])) {
                     case "NOUVELLE-VAGUE":
                         $save = true;
+                        $vague_save = array();
                         $vague_save['agent'] = $save_flux['agent'];
                         $vague_save['date_entree'] = $save_flux['date_action'];
                         $vague_save['date_sortie'] = $save_flux['date_action'];
