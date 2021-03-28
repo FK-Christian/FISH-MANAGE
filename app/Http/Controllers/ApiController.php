@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use CRUDBooster;
+use App\Crudbooster\helpers\BaseBaseCRUDBooster;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Request;
@@ -69,7 +69,7 @@ class ApiController extends Controller
 
         $action_type = $row_api->aksi;
         $table = $row_api->tabel;
-        $pk = CRUDBooster::pk($table);
+        $pk = BaseCRUDBooster::pk($table);
 
         /*
         | ----------------------------------------------
@@ -148,14 +148,14 @@ class ApiController extends Controller
                 if ($type == 'exists') {
                     $config = explode(',', $config);
                     $table_exist = $config[0];
-                    $table_exist = CRUDBooster::parseSqlTable($table_exist)['table'];
+                    $table_exist = BaseCRUDBooster::parseSqlTable($table_exist)['table'];
                     $field_exist = $config[1];
                     $config = ($field_exist) ? $table_exist.','.$field_exist : $table_exist;
                     $format_validation[] = 'exists:'.$config;
                 } elseif ($type == 'unique') {
                     $config = explode(',', $config);
                     $table_exist = $config[0];
-                    $table_exist = CRUDBooster::parseSqlTable($table_exist)['table'];
+                    $table_exist = BaseCRUDBooster::parseSqlTable($table_exist)['table'];
                     $field_exist = $config[1];
                     $config = ($field_exist) ? $table_exist.','.$field_exist : $table_exist;
                     $format_validation[] = 'unique:'.$config;
@@ -186,8 +186,8 @@ class ApiController extends Controller
                 }
 
                 if ($name == 'id') {
-                    $table_exist = CRUDBooster::parseSqlTable($table)['table'];
-                    $table_exist_pk = CRUDBooster::pk($table_exist);
+                    $table_exist = BaseCRUDBooster::parseSqlTable($table)['table'];
+                    $table_exist_pk = BaseCRUDBooster::pk($table_exist);
                     $format_validation[] = 'exists:'.$table_exist.','.$table_exist_pk;
                 }
 
@@ -247,7 +247,7 @@ class ApiController extends Controller
                 $subquery = $resp['subquery'];
                 $used = intval($resp['used']);
 
-                if ($used == 0 && ! CRUDBooster::isForeignKey($name)) {
+                if ($used == 0 && ! BaseCRUDBooster::isForeignKey($name)) {
                     continue;
                 }
 
@@ -274,10 +274,10 @@ class ApiController extends Controller
                 }
 
                 $name_tmp[] = $name;
-                if (CRUDBooster::isForeignKey($name)) {
-                    $jointable = CRUDBooster::getTableForeignKey($name);
-                    $jointable_field = CRUDBooster::getTableColumns($jointable);
-                    $jointablePK = CRUDBooster::pk($jointable);
+                if (BaseCRUDBooster::isForeignKey($name)) {
+                    $jointable = BaseCRUDBooster::getTableForeignKey($name);
+                    $jointable_field = BaseCRUDBooster::getTableColumns($jointable);
+                    $jointablePK = BaseCRUDBooster::pk($jointable);
                     $data->leftjoin($jointable, $jointable.'.'.$jointablePK, '=', $table.'.'.$name);
                     foreach ($jointable_field as $jf) {
                         $jf_alias = $jointable.'_'.$jf;
@@ -332,7 +332,7 @@ class ApiController extends Controller
                 }
             }
 
-            if (CRUDBooster::isColumnExists($table, 'deleted_at')) {
+            if (BaseCRUDBooster::isColumnExists($table, 'deleted_at')) {
                 $data->where($table.'.deleted_at', null);
             }
 
@@ -349,7 +349,7 @@ class ApiController extends Controller
                     }
 
                     if ($required == '1') {
-                        if (CRUDBooster::isColumnExists($table, $name)) {
+                        if (BaseCRUDBooster::isColumnExists($table, $name)) {
                             $w->where($table.'.'.$name, $value);
                         } else {
                             $w->having($name, '=', $value);
@@ -357,7 +357,7 @@ class ApiController extends Controller
                     } else {
                         if ($used) {
                             if ($value) {
-                                if (CRUDBooster::isColumnExists($table, $name)) {
+                                if (BaseCRUDBooster::isColumnExists($table, $name)) {
                                     $w->where($table.'.'.$name, $value);
                                 } else {
                                     $w->having($name, '=', $value);
@@ -496,7 +496,7 @@ class ApiController extends Controller
                 }
             } elseif ($action_type == 'delete') {
 
-                if (CRUDBooster::isColumnExists($table, 'deleted_at')) {
+                if (BaseCRUDBooster::isColumnExists($table, 'deleted_at')) {
                     $delete = $data->update(['deleted_at' => date('Y-m-d H:i:s')]);
                 } else {
                     $delete = $data->delete();
@@ -510,7 +510,7 @@ class ApiController extends Controller
 
             $row_assign = [];
             foreach ($input_validator as $k => $v) {
-                if (CRUDBooster::isColumnExists($table, $k)) {
+                if (BaseCRUDBooster::isColumnExists($table, $k)) {
                     $row_assign[$k] = $v;
                 }
             }
@@ -525,13 +525,13 @@ class ApiController extends Controller
             }
 
             if ($action_type == 'save_add') {
-                if (CRUDBooster::isColumnExists($table, 'created_at')) {
+                if (BaseCRUDBooster::isColumnExists($table, 'created_at')) {
                     $row_assign['created_at'] = date('Y-m-d H:i:s');
                 }
             }
 
             if ($action_type == 'save_edit') {
-                if (CRUDBooster::isColumnExists($table, 'updated_at')) {
+                if (BaseCRUDBooster::isColumnExists($table, 'updated_at')) {
                     $row_assign['updated_at'] = date('Y-m-d H:i:s');
                 }
             }
@@ -552,9 +552,9 @@ class ApiController extends Controller
                 }
 
                 if ($type == 'file' || $type == 'image') {
-                    $row_assign[$name] = CRUDBooster::uploadFile($name, true);
+                    $row_assign[$name] = BaseCRUDBooster::uploadFile($name, true);
                 } elseif ($type == 'base64_file') {
-                    $row_assign[$name] = CRUDBooster::uploadBase64($value);
+                    $row_assign[$name] = BaseCRUDBooster::uploadBase64($value);
                 } elseif ($type == 'password') {
                     $row_assign[$name] = Hash::make(g($name));
                 }
@@ -590,7 +590,7 @@ class ApiController extends Controller
             } else {
 
                 try {
-                    $pk = CRUDBooster::pk($table);
+                    $pk = BaseCRUDBooster::pk($table);
 
                     $lastId = $row_assign[$pk];
 
@@ -622,9 +622,9 @@ class ApiController extends Controller
                 $config = $param['config'];
                 $type = $param['type'];
                 if ($type == 'ref') {
-                    if (CRUDBooster::isColumnExists($config, 'id_'.$table)) {
+                    if (BaseCRUDBooster::isColumnExists($config, 'id_'.$table)) {
                         DB::table($config)->where($name, $value)->update(['id_'.$table => $lastId]);
-                    } elseif (CRUDBooster::isColumnExists($config, $table.'_id')) {
+                    } elseif (BaseCRUDBooster::isColumnExists($config, $table.'_id')) {
                         DB::table($config)->where($name, $value)->update([$table.'_id' => $lastId]);
                     }
                 }

@@ -2,10 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Session;
-use Request;
-use DB;
-use CRUDBooster;
 use App\Models\Navigation;
 use App\Models\Vague;
 use App\Models\Bac;
