@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Navigation extends Model {
 
     protected $table = 'navigations';
-    
+    protected $primaryKey = 'chat_id';
+
+
     protected $casts = [];
     
     protected $dates = ['last_date'];
