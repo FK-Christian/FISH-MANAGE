@@ -54,26 +54,26 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
             $data_collected[$var_name] = $value;
             $to_update = array('last_date' => date('Y-m-d H:i:s'), 'data_collected' => json_encode($data_collected));
         }
-        $nav->save($to_update);
+        $nav->update($to_update);
     }
     
     private function update_vague_or_bac_nbre($id, $nbre, $is_vague = false, $is_nbre_sortie = true) {
         if ($is_vague) {
             $vague = Vague::findOrFail($id);
             if ($is_nbre_sortie) {
-                $vague->save(array('nbre_sortie' => ($vague->nbre_sortie + $nbre)));
+                $vague->update(array('nbre_sortie' => ($vague->nbre_sortie + $nbre)));
             } else {
-                $vague->save(array('nbre_perte' => ($vague->nbre_perte + $nbre)));
+                $vague->update(array('nbre_perte' => ($vague->nbre_perte + $nbre)));
             }
         } else {
             $bac = Bac::findOrFail($id);
-            $bac->save(array('nbre' => ($bac->nbre + $nbre)));
+            $bac->update(array('nbre' => ($bac->nbre + $nbre)));
         }
     }
 
     private function update_aliment_stock($id, $qte) {
         $aliment = Aliment::findOrFail($id);
-        $aliment->save(array('stock_en_g' => $aliment->stock_en_g + $qte));
+        $aliment->update(array('stock_en_g' => $aliment->stock_en_g + $qte));
     }
     
     private function get_user_and_dataSaved() {
@@ -93,13 +93,13 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
             $toSave['step'] = "HOME_HOME";
             $toSave['data_collected'] = json_encode(array());
             $toSave['last_date'] = date('Y-m-d H:i:s');
-            Navigation::save($toSave);
+            Navigation::create($toSave);
             $this->navigation->customer_current_step = "HOME_HOME";
             $this->navigation->customer_next_step = "HOME_HOME";
         } else {
             $this->navigation->customer_current_step = $navigation_save->step;
             $this->navigation->customer_next_step = "UNDEFINE_UNDEFINE";
-            $navigation_save->save(array('last_date' => date('Y-m-d H:i:s')));
+            $navigation_save->update(array('last_date' => date('Y-m-d H:i:s')));
         }
     }
     
@@ -129,7 +129,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         break;
                     case "BAC":
                         if ((ctype_digit($value))) {
-                            $bac = $this->get_data_by("*", "bacs", "id = $value");
+                            $bac = Bac::where('id',$value)->get(); //$this->get_data_by("*", "bacs", "id = $value");
                             if (!empty($bac)) {
                                 $this->navigation->customer_next_step = $this->getStepCode($service . "_BAC");
                                 $this->save_data_collected("bac_source", $value);
@@ -144,7 +144,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         break;
                     case "BAC2":
                         if ((ctype_digit($value))) {
-                            $bac = $this->get_data_by("*", "bacs", "id = $value");
+                            $bac = Bac::where('id',$value)->get();
                             if (!empty($bac)) {
                                 $this->navigation->customer_next_step = $this->getStepCode($service . "_BAC2");
                                 $this->save_data_collected("bac_destination", $value);
@@ -159,7 +159,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         break;
                     case "VAGUE":
                         if ((ctype_digit($value))) {
-                            $vague = $this->get_data_by("*", "vagues", "id = $value");
+                            $vague = Vague::where('id',$value)->get();
                             if (!empty($vague)) {
                                 $this->navigation->customer_next_step = $this->getStepCode($service . "_VAGUE");
                                 $this->save_data_collected("vague", $value);
@@ -174,7 +174,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         break;
                     case "ALIMENT":
                         if ((ctype_digit($value))) {
-                            $aliment = $this->get_data_by("*", "aliments", "id = $value");
+                            $aliment = Aliment::where('id',$value)->get();
                             if (!empty($aliment)) {
                                 $this->navigation->customer_next_step = $this->getStepCode($service . "_ALIMENT");
                                 $this->save_data_collected("aliment", $value);
@@ -189,7 +189,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         break;
                     case "ID":
                         if ((ctype_digit($value)) && $value > 0) {
-                            $flux = $this->get_data_by("*", "flux_movements", "id = $value");
+                            $flux = Flux::where('id',$value)->get();
                             if (!empty($flux)) {
                                 $this->navigation->customer_next_step = $this->getStepCode($service . "_ID");
                                 $this->save_data_collected("id", $value);
@@ -311,7 +311,8 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         }
                         break;
                 }
-                $this->save_where("chat_id = '" . $this->navigation->customer_chat_id . "'", 'navigation', array('last_date' => date('Y-m-d H:i:s'), 'step' => $this->navigation->customer_next_step));
+                $navigation_save = Navigation::where('chat_id',$this->navigation->customer_chat_id)->first();
+                $navigation_save->update(array('last_date' => date('Y-m-d H:i:s'), 'step' => $this->navigation->customer_next_step));
             }
         }
     }
@@ -402,7 +403,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                             $to_save_preuve['photo'] = $user_data['photo_' . $i];
                             $to_save_preuve['description'] = $user_data['description'];
                             $to_save_preuve['agent'] = $user_data['agent'];
-                            Preuve::save($to_save_preuve);
+                            Preuve::create($to_save_preuve);
                         }
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
@@ -449,7 +450,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         break;
                 }
                 if ($save) {
-                    $flux = Flux::save($save_flux);
+                    $flux = Flux::create($save_flux);
                     notify_after_action_flux($flux);
                 }
                 $this->save_data_collected('', '', true);
