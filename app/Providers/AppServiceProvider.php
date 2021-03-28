@@ -13,7 +13,8 @@ class AppServiceProvider extends ServiceProvider {
      * @return void
      */
     public function register() {
-        //
+        $loader = \Illuminate\Foundation\AliasLoader::getInstance();  
+        $loader->alias('CRUDBooster', 'App\CRUDBooster\helpers\BaseCRUDBooster');
     }
 
     /**
