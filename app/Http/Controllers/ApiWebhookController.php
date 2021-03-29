@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Log;
 use App\Models\Navigation;
 use App\Models\Vague;
@@ -131,8 +130,8 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         break;
                     case "BAC":
                         if ((ctype_digit($value))) {
-                            $bac = Bac::where('id',$value)->get(); //$this->get_data_by("*", "bacs", "id = $value");
-                            if (!empty($bac)) {
+                            $bac = Bac::where('id',$value)->first(); //$this->get_data_by("*", "bacs", "id = $value");
+                            if (($bac)) {
                                 $this->navigation->customer_next_step = $this->getStepCode($service . "_BAC");
                                 $this->update_data_collected("bac_source", $value);
                             } else {
@@ -146,8 +145,8 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         break;
                     case "BAC2":
                         if ((ctype_digit($value))) {
-                            $bac = Bac::where('id',$value)->get();
-                            if (!empty($bac)) {
+                            $bac = Bac::where('id',$value)->first();
+                            if (($bac)) {
                                 $this->navigation->customer_next_step = $this->getStepCode($service . "_BAC2");
                                 $this->update_data_collected("bac_destination", $value);
                             } else {
@@ -161,8 +160,8 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         break;
                     case "VAGUE":
                         if ((ctype_digit($value))) {
-                            $vague = Vague::where('id',$value)->get();
-                            if (!empty($vague)) {
+                            $vague = Vague::where('id',$value)->first();
+                            if (($vague)) {
                                 $this->navigation->customer_next_step = $this->getStepCode($service . "_VAGUE");
                                 $this->update_data_collected("vague", $value);
                             } else {
@@ -176,8 +175,8 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         break;
                     case "ALIMENT":
                         if ((ctype_digit($value))) {
-                            $aliment = Aliment::where('id',$value)->get();
-                            if (!empty($aliment)) {
+                            $aliment = Aliment::where('id',$value)->first();
+                            if (($aliment)) {
                                 $this->navigation->customer_next_step = $this->getStepCode($service . "_ALIMENT");
                                 $this->update_data_collected("aliment", $value);
                             } else {
@@ -191,8 +190,8 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         break;
                     case "ID":
                         if ((ctype_digit($value)) && $value > 0) {
-                            $flux = Flux::where('id',$value)->get();
-                            if (!empty($flux)) {
+                            $flux = Flux::where('id',$value)->first();
+                            if (($flux)) {
                                 $this->navigation->customer_next_step = $this->getStepCode($service . "_ID");
                                 $this->update_data_collected("id", $value);
                             } else {
