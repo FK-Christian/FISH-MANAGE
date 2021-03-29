@@ -357,15 +357,15 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         $save_flux['type_flux'] = "POISSON";
                         $save_flux['statut'] = "ACHAT";
                         $save_flux['qte_gramme'] = $vague_save['poids_unite'];
-                        $this->save_vague_or_bac_nbre($save_flux['bac_source'], $save_flux['nbre']);
+                        $this->update_vague_or_bac_nbre($save_flux['bac_source'], $save_flux['nbre']);
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
                     case "PERTE-POISSON":
                         $save = true;
                         $save_flux['type_flux'] = "POISSON";
                         $save_flux['statut'] = "PERTE";
-                        $this->save_vague_or_bac_nbre($save_flux['bac_source'], (-1) * $save_flux['nbre']);
-                        $this->save_vague_or_bac_nbre($save_flux['vague'], $save_flux['nbre'], true, false);
+                        $this->update_vague_or_bac_nbre($save_flux['bac_source'], (-1) * $save_flux['nbre']);
+                        $this->update_vague_or_bac_nbre($save_flux['vague'], $save_flux['nbre'], true, false);
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
                     case "NUTRITION-POISSON":
@@ -387,16 +387,16 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         $save = true;
                         $save_flux['type_flux'] = "POISSON";
                         $save_flux['statut'] = "CHANGEMENT_BAC";
-                        $this->save_vague_or_bac_nbre($save_flux['bac_source'], (-1) * $save_flux['nbre']);
-                        $this->save_vague_or_bac_nbre($save_flux['bac_destination'], $save_flux['nbre']);
+                        $this->update_vague_or_bac_nbre($save_flux['bac_source'], (-1) * $save_flux['nbre']);
+                        $this->update_vague_or_bac_nbre($save_flux['bac_destination'], $save_flux['nbre']);
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
                     case "VENTE-POISSON":
                         $save = true;
                         $save_flux['type_flux'] = "POISSON";
                         $save_flux['statut'] = "VENTE";
-                        $this->save_vague_or_bac_nbre($save_flux['bac_source'], (-1) * $save_flux['nbre']);
-                        $this->save_vague_or_bac_nbre($save_flux['vague'], $save_flux['nbre'], true);
+                        $this->update_vague_or_bac_nbre($save_flux['bac_source'], (-1) * $save_flux['nbre']);
+                        $this->update_vague_or_bac_nbre($save_flux['vague'], $save_flux['nbre'], true);
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
                     case "PH0TO-PREUVE":
