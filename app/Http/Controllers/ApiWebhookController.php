@@ -371,7 +371,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         $save = true;
                         $save_flux['type_flux'] = "ALIMENT";
                         $save_flux['statut'] = "NUTRITION";
-                        $this->save_aliment_stock($save_flux['aliment'], (-1) * $save_flux['qte_gramme']);
+                        $this->update_aliment_stock($save_flux['aliment'], (-1) * $save_flux['qte_gramme']);
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
                     case "ACHAT-ALIMENT":
@@ -379,7 +379,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         $save_flux['type_flux'] = "ALIMENT";
                         $save_flux['statut'] = "ACHAT";
                         $save_flux['qte_gramme'] = $user_data['poids_kg']*1000;
-                        $this->save_aliment_stock($save_flux['aliment'], ($user_data['qte_gramme']));
+                        $this->update_aliment_stock($save_flux['aliment'], ($user_data['qte_gramme']));
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
                     case "CHANGEMENT-BAC":
