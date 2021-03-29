@@ -287,11 +287,12 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                                 }
                             }
                             if ($position_suivante > $nbre) {
-                                $picture_step = $this->getStepCode($service . "_PHOTO");
+                                $this->navigation->customer_next_step = $this->getStepCode($service . "_PHOTO");
                             } else {
-                                $picture_step = $this->navigation->customer_current_step;
+                                $tab_pic = explode('_',$this->navigation->customer_current_step);
+                                $tab_pic[sizeof($tab_pic)-1] = $position_suivante;
+                                $this->navigation->customer_next_step = join('_', $tab_pic);
                             }
-                            $this->navigation->customer_next_step = $picture_step."_$position_suivante";
                         }
                         break;
                     case "DATE1":
@@ -404,7 +405,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         for ($i = 1; $i <= $nbre; $i++) {
                             $to_save_preuve['flux'] = $user_data['id'];
                             $to_save_preuve['date_entree'] = date('Y-m-d H:i:s');
-                            $to_save_preuve['photo'] = $user_data['photo_' . $i];
+                            $to_save_preuve['photo'] = "uploads/proofs/".$user_data['photo_' . $i];
                             $to_save_preuve['description'] = $user_data['description'];
                             $to_save_preuve['agent'] = $user_data['agent'];
                             Preuve::create($to_save_preuve);
