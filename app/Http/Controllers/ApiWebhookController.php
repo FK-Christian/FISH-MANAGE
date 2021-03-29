@@ -23,16 +23,18 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
     }
 
     public function hook_before(&$received_data) {
+        Log::debug("DATA IN: ".json_encode($received_data));
         $received_data = Request::all();
+        Log::debug("DATA REQUEST: ".json_encode($received_data));
         $this->navigation = new \stdClass();
         $this->navigation->customer_chat_id = $received_data['message']['from']['id'];
         $this->navigation->customer_message = isset($received_data['message']['text']) ? $received_data['message']['text'] : 'picture_send';
         $this->navigation->customer_name = $received_data['message']['from']['last_name'] . " " . $received_data['message']['from']['first_name'];
         $this->navigation->file_name = telegramGetFile($received_data);
-        $this->getCurrentPosition();
-        $this->evaluateInput();
-        $this->getNextPosition();
-        telegramChat($this->navigation->customer_chat_id, $this->navigation->customer_message_answer);
+//        $this->getCurrentPosition();
+//        $this->evaluateInput();
+//        $this->getNextPosition();
+//        telegramChat($this->navigation->customer_chat_id, $this->navigation->customer_message_answer);
     }
 
     public function hook_query(&$query) {
