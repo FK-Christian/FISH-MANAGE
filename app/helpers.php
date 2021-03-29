@@ -7,6 +7,20 @@ use App\Models\CmsUser;
 use App\Models\Template;
 use App\Models\Atelier;
 
+function is_sql_date($date){
+    $tab = explode("-", $date);
+    if(sizeof($tab == 3)){
+        if(ctype_digit($tab[0]) && strlen("".$tab[0]) == 4){
+            if(ctype_digit($tab[1]) && strlen("".$tab[1]) == 2){
+                if(ctype_digit($tab[2]) && strlen("".$tab[2]) == 2){
+                    return true;
+                } 
+            }
+        }
+    }
+    return false;
+}
+
 function sendTelegramMessage($messages) {
     $user_notifiable = CmsUser::where('notifiable',true)->where('telegram_id','is not null')->get();
     $retour = array();
