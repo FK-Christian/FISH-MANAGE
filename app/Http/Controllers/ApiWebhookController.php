@@ -286,7 +286,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                                     break;
                                 }
                             }
-                            if ($position_suivante > $nbre) {
+                            if ($position_suivante < $nbre) {
                                 $this->navigation->customer_next_step = $this->getStepCode($service . "_PHOTO") . "_$position_suivante";
                             } else {
                                 $this->navigation->customer_next_step = $this->navigation->customer_current_step;
