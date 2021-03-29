@@ -1,5 +1,6 @@
 <?php
 return [
+    "PROOF_PATH" => "/home/xasfvkeg/fish.gvs/storage/app/uploads/proofs",
     "TYPE_CHARGE" => [
         'FIXE' => 'FIXE',
         'MENSUELLE' => 'MENSUELLE',

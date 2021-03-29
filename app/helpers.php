@@ -93,7 +93,7 @@ function telegramGetFile($chatresponse) {
                     $data = file_get_contents($download_url);
                     $tab = explode(".", $file_path);
                     $fileName = "Proof_" . $chatresponse['message']['from']['id'] . "_" . date('YmdHis') . "." . $tab[sizeof($tab) - 1];
-                    file_put_contents("proofs/" . $fileName, $data);
+                    file_put_contents(config('constants.PROOF_PATH')."/" . $fileName, $data);
                     return $fileName;
                 }
             }
