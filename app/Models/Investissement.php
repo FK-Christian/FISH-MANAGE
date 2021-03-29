@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Investissement extends Model {
+class Investissement extends GeneralModel {
 
     protected $table = 'investissements';
     

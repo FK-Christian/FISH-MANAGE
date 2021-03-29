@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Vague extends Model {
+class Vague extends GeneralModel {
 
     protected $table = 'vagues';
     

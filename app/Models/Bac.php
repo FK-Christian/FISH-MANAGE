@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 
-class Bac extends Model {
+class Bac extends GeneralModel {
 
     protected $table = 'bacs';
 }

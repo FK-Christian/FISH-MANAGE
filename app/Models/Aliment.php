@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Aliment extends Model {
+class Aliment extends GeneralModel {
     protected $table = 'aliments';
 }

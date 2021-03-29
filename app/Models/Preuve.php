@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Preuve extends Model
+class Preuve extends GeneralModel
 {
     protected $table = 'preuves';
 }

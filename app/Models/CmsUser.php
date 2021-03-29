@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class CmsUser extends Model {
+class CmsUser extends GeneralModel {
 
     protected $table = 'cms_users';
 
