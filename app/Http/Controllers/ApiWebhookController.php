@@ -379,7 +379,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         $save_flux['type_flux'] = "ALIMENT";
                         $save_flux['statut'] = "ACHAT";
                         $save_flux['qte_gramme'] = $user_data['poids_kg']*1000;
-                        $this->update_aliment_stock($save_flux['aliment'], ($user_data['qte_gramme']));
+                        $this->update_aliment_stock($save_flux['aliment'], ($save_flux['qte_gramme']));
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
                     case "CHANGEMENT-BAC":
