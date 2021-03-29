@@ -413,7 +413,8 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                     case "JOURNAL":
                         $date1 = $user_data['date_debut'] . " 00:00:01";
                         $date2 = $user_data['date_fin'] . " 23:59:59";
-                        $data = Flux::where('date_action','between',"'$date1' AND '$date2'")->orderBy('date_action', 'desc')->offset(0)->limit(10)->get();
+                        $data = Flux::whereBetween(DB::raw('DATE(date_action)'), array($date1, $date2))
+                        ->orderBy('date_action', 'desc')->offset(0)->limit(10)->get();
                         $liste = array();
                         foreach ($data as $one) {
                             $temp_message = "ID: " . $one->id . "\n";
