@@ -8,17 +8,11 @@ use App\Models\Template;
 use App\Models\Atelier;
 
 function is_sql_date($date){
-    $tab = explode("-", $date);
-    if(sizeof($tab == 3)){
-        if(ctype_digit($tab[0]) && strlen("".$tab[0]) == 4){
-            if(ctype_digit($tab[1]) && strlen("".$tab[1]) == 2){
-                if(ctype_digit($tab[2]) && strlen("".$tab[2]) == 2){
-                    return true;
-                } 
-            }
-        }
+    if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$date)) {
+        return true;
+    } else {
+        return false;
     }
-    return false;
 }
 
 function sendTelegramMessage($messages) {
