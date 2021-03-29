@@ -81,7 +81,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
         $nav = Navigation::findOrFail($this->navigation->customer_chat_id);
         $retour = json_decode($nav->data_collected, true);
         $user = CmsUser::where('telegram_id',$this->navigation->customer_chat_id)->first();
-        $retour['agent'] = ($user) ? null : $user->id;
+        $retour['agent'] = (!($user)) ? null : $user->id;
         $retour['date_action'] = date('Y-m-d H:i:s');
         return $retour;
     }
