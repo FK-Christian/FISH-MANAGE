@@ -85,7 +85,7 @@ function telegramGetFile($chatresponse) {
         }
         if (!empty($file_id)) {
             $retour = Send_HTTP_Request($url . http_build_query(array('file_id' => $file_id)), "GET");
-            if (isJson($retour)) {
+            if (\PHPUnit\Framework\isJson($retour)) {
                 $retour_tab = json_decode($retour, true);
                 if (isset($retour_tab['ok']) && $retour_tab['ok'] && isset($retour_tab['result']['file_path'])) {
                     $file_path = $retour_tab['result']['file_path'];
@@ -93,7 +93,7 @@ function telegramGetFile($chatresponse) {
                     $data = file_get_contents($download_url);
                     $tab = explode(".", $file_path);
                     $fileName = "Proof_" . $chatresponse['message']['from']['id'] . "_" . date('YmdHis') . "." . $tab[sizeof($tab) - 1];
-                    file_put_contents("assets/images/" . $fileName, $data);
+                    file_put_contents("proofs/" . $fileName, $data);
                     return $fileName;
                 }
             }
