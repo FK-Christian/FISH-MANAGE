@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Log;
 use App\Models\Navigation;
 use App\Models\Vague;
 use App\Models\Bac;
@@ -87,6 +88,8 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
     
     private function getCurrentPosition() {
         $navigation_save = Navigation::where('chat_id',$this->navigation->customer_chat_id)->first();
+        Log::debug("NAVIGATION IN: ".json_encode($this->navigation));
+        Log::debug("NAVIGATION DB: ".json_encode($navigation_save));
         if (!$navigation_save) {
             $toSave['chat_id'] = "" . $this->navigation->customer_chat_id;
             $toSave['name'] = $this->navigation->customer_name;
