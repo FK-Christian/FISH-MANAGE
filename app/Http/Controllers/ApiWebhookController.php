@@ -277,7 +277,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         } else {
                             $data = $this->get_user_and_dataSaved();
                             $nbre = $data['nbre_photo'];
-                            $position_suivante = 0; //($nbre + 1);
+                            $position_suivante = ($nbre + 1);
                             for ($i = 1; $i <= $nbre; $i++) {
                                 $next_to_save = "photo_$i";
                                 if (!isset($data[$next_to_save])) {
@@ -286,11 +286,12 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                                     break;
                                 }
                             }
-                            if ($position_suivante > 0 && $position_suivante <= $nbre) {
-                                $this->navigation->customer_next_step = $this->getStepCode($service . "_PHOTO") . "_$position_suivante";
+                            if ($position_suivante > $nbre) {
+                                $picture_step = $this->getStepCode($service . "_PHOTO");
                             } else {
-                                $this->navigation->customer_next_step = $this->navigation->customer_current_step;
+                                $picture_step = $this->navigation->customer_current_step;
                             }
+                            $this->navigation->customer_next_step = $picture_step."_$position_suivante";
                         }
                         break;
                     case "DATE1":
