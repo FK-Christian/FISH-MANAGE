@@ -550,7 +550,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                 $this->navigation->customer_message_answer = ""
                         . "Approuvez vous ces informations ? \n\n";
                 foreach ($data_recap as $cle => $val){
-                    $this->navigation->customer_message_answer .= $cle." - ".$val."\n";
+                    $this->navigation->customer_message_answer .= str_replace("_", "-", $cle)." - ".str_replace("_", "-", $val)."\n";
                 }
                 $this->navigation->customer_message_answer .= "\n\n"
                         . "1- OUI\n"
