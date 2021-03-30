@@ -30,7 +30,7 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Agent","name"=>"agent","join"=>"cms_users,id"];
+			$this->col[] = ["label"=>"Agent","name"=>"agent","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Flux","name"=>"flux","join"=>"flux_movements,id"];
 			$this->col[] = ["label"=>"Date Entree","name"=>"date_entree"];
 			$this->col[] = ["label"=>"Photo","name"=>"photo","image"=>true];
@@ -48,11 +48,11 @@
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ["label"=>"Agent","name"=>"agent","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Flux","name"=>"flux","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Date Entree","name"=>"date_entree","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
-			//$this->form[] = ["label"=>"Photo","name"=>"photo","type"=>"upload","required"=>TRUE,"validation"=>"required|image|max:3000","help"=>"File types support : JPG, JPEG, PNG, GIF, BMP"];
-			//$this->form[] = ["label"=>"Description","name"=>"description","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ['label'=>'Agent','name'=>'agent','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_users,name'];
+			//$this->form[] = ['label'=>'Flux','name'=>'flux','type'=>'select2','validation'=>'required|min:1|max:255','width'=>'col-sm-10','datatable'=>'flux_movements,type_flux'];
+			//$this->form[] = ['label'=>'Date Entree','name'=>'date_entree','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Photo','name'=>'photo','type'=>'upload','validation'=>'required|image|max:3000','width'=>'col-sm-10','help'=>'File types support : JPG, JPEG, PNG, GIF, BMP'];
+			//$this->form[] = ['label'=>'Description','name'=>'description','type'=>'textarea','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			# OLD END FORM
 
 			/* 

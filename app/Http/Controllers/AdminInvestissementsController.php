@@ -30,7 +30,8 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Agent","name"=>"agent"];
+			$this->col[] = ["label"=>"Nom","name"=>"name"];
+			$this->col[] = ["label"=>"Agent","name"=>"agent","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Start Date","name"=>"start_date"];
 			$this->col[] = ["label"=>"Last Modification","name"=>"last_modification"];
 			$this->col[] = ["label"=>"Balance","name"=>"balance"];
@@ -42,22 +43,24 @@
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
 			$this->form[] = ['label'=>'Agent','name'=>'agent','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_users,name'];
+			$this->form[] = ['label'=>'Name','name'=>'name','type'=>'text','validation'=>'required','width'=>'col-sm-9'];
 			$this->form[] = ['label'=>'Start Date','name'=>'start_date','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Last Modification','name'=>'last_modification','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Balance','name'=>'balance','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Max To Give','name'=>'max_to_give','type'=>'number','validation'=>'required|integer|min:1','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'checkbox','validation'=>'required|min:1|max:255','width'=>'col-sm-10','dataenum'=>'is_active'];
+			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'checkbox','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Description','name'=>'description','type'=>'textarea','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
 			//$this->form = [];
 			//$this->form[] = ['label'=>'Agent','name'=>'agent','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_users,name'];
+			//$this->form[] = ['label'=>'Name','name'=>'name','type'=>'text','validation'=>'required','width'=>'col-sm-9'];
 			//$this->form[] = ['label'=>'Start Date','name'=>'start_date','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-10'];
 			//$this->form[] = ['label'=>'Last Modification','name'=>'last_modification','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-10'];
 			//$this->form[] = ['label'=>'Balance','name'=>'balance','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-			//$this->form[] = ['label'=>'Max To Give','name'=>'max_to_give','type'=>'number','validation'=>'required|integer|min:1','width'=>'col-sm-10'];
-			//$this->form[] = ['label'=>'Status','name'=>'status','type'=>'checkbox','validation'=>'required|min:1|max:255','width'=>'col-sm-10','dataenum'=>'1,0'];
+			//$this->form[] = ['label'=>'Max To Give','name'=>'max_to_give','type'=>'number','validation'=>'required|integer|min:1','width'=>'col-sm-10','dataenum'=>'is_active'];
+			//$this->form[] = ['label'=>'Status','name'=>'status','type'=>'checkbox','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			//$this->form[] = ['label'=>'Description','name'=>'description','type'=>'textarea','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			# OLD END FORM
 
