@@ -272,7 +272,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         }
                         break;
                     case "PU":
-                        if ((ctype_digit($value)) && $value > 0) {
+                        if ((ctype_digit($value)) && $value >= 0) {
                             $this->navigation->customer_next_step = $this->getStepCode($service . "_PU");
                             $this->update_data_collected("cout_unite", $value);
                         } else {
@@ -281,7 +281,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         }
                         break;
                     case "PUKG":
-                        if ((ctype_digit($value)) && $value > 0) {
+                        if ((ctype_digit($value)) && $value >= 0) {
                             $this->navigation->customer_next_step = $this->getStepCode($service . "_PUKG");
                             $this->update_data_collected("cout_kg", $value);
                         } else {
@@ -290,7 +290,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         }
                         break;
                     case "PKG":
-                        if ((ctype_digit($value)) && $value > 0) {
+                        if ((ctype_digit($value)) && $value >= 0) {
                             $this->navigation->customer_next_step = $this->getStepCode($service . "_PKG");
                             $this->update_data_collected("poids_kg", $value);
                         } else {
