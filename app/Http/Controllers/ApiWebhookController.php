@@ -428,6 +428,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                             . "CAISSE TOTAL: ". number_format(get_caisse_by_type(), 0, ",", " ")." FCFA\n";                        
                         break;
                     case "INVESTISSEMENT":
+                        $save = true;
                         $actionnaire = Investissement::where('agent',$user_data['actionnaire'])->first();
                         $actionnaire->update(array('balance' => ($actionnaire->balance + $save_flux['cout_unite'])));
                         $save_flux['type_flux'] = "INVESTISSEMENT";
