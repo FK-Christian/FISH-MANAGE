@@ -6,12 +6,35 @@ use App\Models\Aliment;
 use App\Models\CmsUser;
 use App\Models\Template;
 use App\Models\Atelier;
+use App\Models\Investissement;
+use App\Models\Flux;
 
 function is_sql_date($date){
     if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$date)) {
         return true;
     } else {
         return false;
+    }
+}
+
+function get_caisse_by_type($type = "CAISSE"){
+    $investissement = Investissement::sum('balance');
+    $charges = Flux::where('type_flux', '=', "CHARGE")->sum('cout_unite');
+    $ventes = Flux::where('status', '=', "VENTE")->sum('cout_unite');
+    $achats = Flux::where('status', '=', "ACHAT")->sum("(cout_unite * nbre)+(cout_kg * qte_gramme/1000)");
+    switch (strtoupper($type)){
+        case "CAISSE":
+            return $investissement + $ventes - $charges - $achats;
+        break;
+        case "INVESTISSEMENT":
+            return $investissement;
+        break;
+        case "CHARGE":
+            return $charges;
+        break;
+        case "ACHAT":
+            return $achats;
+        break;
     }
 }
 

@@ -21,6 +21,8 @@ class Flux extends GeneralModel {
         'statut',
         'cout_unite',
         'cout_kg',
+        'caisse_avant',
+        'caisse_apres',
         'description'
     ];
 }

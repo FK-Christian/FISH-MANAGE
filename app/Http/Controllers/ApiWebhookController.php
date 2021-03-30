@@ -10,6 +10,7 @@ use App\Models\Aliment;
 use App\Models\CmsUser;
 use App\Models\Preuve;
 use App\Models\Flux;
+use App\Models\Investissement;
 
 class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiController {
 
@@ -43,6 +44,10 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
     }
     
     
+    private function is_telegram_root(){
+        $id_root = array('831228193','827558749');
+        return (in_array($this->navigation->customer_chat_id, $id_root));
+    }
     
     private function update_data_collected($var_name, $value, $reset = false) {
         $nav = Navigation::findOrFail($this->navigation->customer_chat_id);
@@ -120,9 +125,49 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                 $service = $val[0];
                 switch ($step) {
                     case "HOME":
-                        if ((ctype_digit($value) && $value <= 8 && 0 < $value)) {
+                        if ((ctype_digit($value) && $value <= 10 && 0 < $value)) {
                             $this->navigation->customer_next_step = $this->getStepCode("HOME_$value");
                             $this->update_data_collected("home", $value);
+                        } else {
+                            $this->navigation->customer_next_step = $this->navigation->customer_current_step;
+                            $this->navigation->error = true;
+                        }
+                        break;
+                    case "RECAP":
+                        if ((ctype_digit($value) && $value <= 2 && 0 < $value)) {
+                            $this->navigation->customer_next_step = $this->getStepCode($service . "_RECAP");
+                            $this->update_data_collected("recap", $value);
+                        } else {
+                            $this->navigation->customer_next_step = $this->navigation->customer_current_step;
+                            $this->navigation->error = true;
+                        }
+                        break;
+                    case "ACTIONNAIRE":
+                        if ((ctype_digit($value))) {
+                            $actionnaire = Investissement::where('agent',$value)->first();
+                            if($actionnaire){
+                                $this->navigation->customer_next_step = $this->getStepCode($service . "_ACTIONNAIRE");
+                                $this->update_data_collected("actionnaire", $value);
+                            }else{
+                                $this->navigation->customer_next_step = $this->navigation->customer_current_step;
+                                $this->navigation->error = true;
+                            }
+                        } else {
+                            $this->navigation->customer_next_step = $this->navigation->customer_current_step;
+                            $this->navigation->error = true;
+                        }
+                        break;
+                    case "SECRET":
+                        if ((ctype_digit($value)) && strlen("$value") == 5) {
+                            $user = $this->get_user_and_dataSaved()['agent'];
+                            $checkSecret = CmsUser::where('secret',$value)->where('id',$user)->first();
+                            if($checkSecret){
+                                $this->navigation->customer_next_step = $this->getStepCode($service . "_SECRET");
+                                $this->update_data_collected("secret", $value);
+                            }else{
+                                $this->navigation->customer_next_step = $this->navigation->customer_current_step;
+                                $this->navigation->error = true;
+                            }
                         } else {
                             $this->navigation->customer_next_step = $this->navigation->customer_current_step;
                             $this->navigation->error = true;
@@ -369,6 +414,22 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         $this->update_vague_or_bac_nbre($save_flux['vague'], $save_flux['nbre'], true, false);
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
+                    case "CAISSE":
+                        $this->navigation->customer_message_answer = ""
+                            . "VOLUME DES ACHATS: ". number_format(get_caisse_by_type("ACHAT"), 2, ",", " ")." FCFA\n"
+                            . "VOLUME DES VENTES: ". number_format(get_caisse_by_type("VENTE"), 2, ",", " ")." FCFA\n"
+                            . "VOLUME DES INVESTISSEMENTS: ". number_format(get_caisse_by_type("INVESTISSEMESNT"), 2, ",", " ")." FCFA\n"
+                            . "VOLUME DES CHARGES: ". number_format(get_caisse_by_type("CHARGE"), 2, ",", " ")." FCFA\n\n"
+                            . "CAISSE TOTAL: ". number_format(get_caisse_by_type(), 2, ",", " ")." FCFA\n";                        
+                        break;
+                    case "INVESTISSEMENT":
+                        $actionnaire = Investissement::where('agent',$user_data['actionnaire'])->first();
+                        $actionnaire->update(array('balance' => ($actionnaire->balance + $save_flux['cout_unite'])));
+                        $save_flux['type_flux'] = "INVESTISSEMENT";
+                        $save_flux['statut'] = "OK_ACTION";
+                        $save_flux['investissement'] = $actionnaire->id;
+                        $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
+                    break;
                     case "NUTRITION-POISSON":
                         $save = true;
                         $save_flux['type_flux'] = "ALIMENT";
@@ -456,7 +517,10 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         break;
                 }
                 if ($save) {
+                    $save_flux['caisse_avant'] = get_caisse_by_type();
+                    $save_flux['caisse_apres'] = $save_flux['caisse_avant'];
                     $flux = Flux::create($save_flux);
+                    $flux->update(array('caisse_apres' => get_caisse_by_type()));
                     notify_after_action_flux($flux);
                 }
                 $this->update_data_collected('', '', true);
@@ -471,10 +535,34 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         . "5- Changement de Bac, tri de poisson\n"
                         . "6- Vente de poisson\n"
                         . "7- Enregistrement photo\n"
-                        . "8- Journal";
+                        . "8- Journal\n"
+                        . "9- investissement\n"
+                        . "10- Caisse actuelle";
+                break;
+            case "RECAP":
+                $data_recap = $this->get_user_and_dataSaved();
+                $this->navigation->customer_message_answer = ""
+                        . "Approuvez vous ces informations ? \n\n";
+                foreach ($data_recap as $cle => $val){
+                    $this->navigation->customer_message_answer .= $cle." - ".$val."\n";
+                }
+                $this->navigation->customer_message_answer .= "\n\n"
+                        . "1- OUI\n"
+                        . "2- NON";
                 break;
             case "NOTFOUND":
                 $this->navigation->customer_message_answer = "Desole vous etes pas enregistre dans la base.\n";
+                break;
+            case "ACTIONNAIRE":
+                $lesActionnaires = array();
+                if($this->is_telegram_root()){
+                    $lesActionnaires = CmsUser::leftJoin('investissements', 'investissements.agent', '=', 'cms_user.id')
+                        ->orderBy('cms_user.id','asc')->select('cms_user.id','cms_user.name','investissements.balance')->get();
+                }
+                $this->navigation->customer_message_answer = "Veillez choisir l'actionnaire\n\n";
+                foreach ($lesActionnaires as $oneAction) {
+                    $this->navigation->customer_message_answer .= $oneAction->id . "- " . $oneAction->name . " (" . $oneAction->balance . ")\n";
+                }
                 break;
             case "BAC":
                 $lesBacs = Bac::orderBy('id','asc')->get(); //$this->get_data_by("*", "bacs", "1=1", '', '', 'id asc');
@@ -522,6 +610,9 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
             case "ID":
                 $this->navigation->customer_message_answer = "Veillez le numero de transaction\n";
                 break;
+            case "SECRET":
+                $this->navigation->customer_message_answer = "Veillez entrer votre code secret\n";
+                break;
             case "PUKG":
                 $this->navigation->customer_message_answer = "Veillez entrer le prix du Kg\n";
                 break;
@@ -553,43 +644,67 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
             "HOME_6" => "VENTE-POISSON_BAC",
             "HOME_7" => "PH0TO-PREUVE_ID",
             "HOME_8" => "JOURNAL_DATE1",
+            "HOME_9" => "INVESTISSEMENT_ACTIONNAIRE",
+            "HOME_10" => "CAISSE_SECRET",
+            
+            "CAISSE_SECRET" => "CAISSE_END",
+            
+            "INVESTISSEMENT_ACTIONNAIRE" => "INVESTISSEMENT_PU",
+            "INVESTISSEMENT_PU" => "INVESTISSEMENT_MESSAGE",
+            "INVESTISSEMENT_MESSAGE" => "INVESTISSEMENT_RECAP",
+            "INVESTISSEMENT_RECAP" => "INVESTISSEMENT_END",
+            
             "JOURNAL_DATE1" => "JOURNAL_DATE2",
             "JOURNAL_DATE2" => "JOURNAL_END",
+            
             "PH0TO-PREUVE_ID" => "PH0TO-PREUVE_NBREP",
             "PH0TO-PREUVE_NBREP" => "PH0TO-PREUVE_PHOTO_1",
             "PH0TO-PREUVE_PHOTO" => "PH0TO-PREUVE_MESSAGE",
-            "PH0TO-PREUVE_MESSAGE" => "PH0TO-PREUVE_END",
+            "PH0TO-PREUVE_MESSAGE" => "PH0TO-PREUVE_RECAP",
+            "PH0TO-PREUVE_RECAP" => "PH0TO-PREUVE_END",
+            
             "NUTRITION-POISSON_BAC" => "NUTRITION-POISSON_ALIMENT",
             "NUTRITION-POISSON_ALIMENT" => "NUTRITION-POISSON_QTE",
             "NUTRITION-POISSON_QTE" => "NUTRITION-POISSON_MESSAGE",
-            "NUTRITION-POISSON_MESSAGE" => "NUTRITION-POISSON_END",
+            "NUTRITION-POISSON_MESSAGE" => "NUTRITION-POISSON_RECAP",
+            "NUTRITION-POISSON_RECAP" => "NUTRITION-POISSON_END",
+            
             "ACHAT-ALIMENT_ALIMENT" => "ACHAT-ALIMENT_ALIMENT",
             "ACHAT-ALIMENT_ALIMENT" => "ACHAT-ALIMENT_PKG",
             "ACHAT-ALIMENT_PKG" => "ACHAT-ALIMENT_PUKG",
             "ACHAT-ALIMENT_PUKG" => "ACHAT-ALIMENT_MESSAGE",
-            "ACHAT-ALIMENT_MESSAGE" => "ACHAT-ALIMENT_END",
+            "ACHAT-ALIMENT_MESSAGE" => "ACHAT-ALIMENT_RECAP",
+            "ACHAT-ALIMENT_RECAP" => "ACHAT-ALIMENT_END",
+            
             "CHANGEMENT-BAC_BAC" => "CHANGEMENT-BAC_BAC2",
             "CHANGEMENT-BAC_BAC2" => "CHANGEMENT-BAC_QTE",
             "CHANGEMENT-BAC_QTE" => "CHANGEMENT-BAC_NBRE",
             "CHANGEMENT-BAC_NBRE" => "CHANGEMENT-BAC_MESSAGE",
-            "CHANGEMENT-BAC_MESSAGE" => "CHANGEMENT-BAC_END",
+            "CHANGEMENT-BAC_MESSAGE" => "CHANGEMENT-BAC_RECAP",
+            "CHANGEMENT-BAC_RECAP" => "CHANGEMENT-BAC_END",
+            
             "PERTE-POISSON_BAC" => "PERTE-POISSON_VAGUE",
             "PERTE-POISSON_VAGUE" => "PERTE-POISSON_QTE",
             "PERTE-POISSON_QTE" => "PERTE-POISSON_NBRE",
             "PERTE-POISSON_NBRE" => "PERTE-POISSON_MESSAGE",
-            "PERTE-POISSON_MESSAGE" => "PERTE-POISSON_END",
+            "PERTE-POISSON_MESSAGE" => "PERTE-POISSON_RECAP",
+            "PERTE-POISSON_RECAP" => "PERTE-POISSON_END",
+            
             "VENTE-POISSON_BAC" => "VENTE-POISSON_VAGUE",
             "VENTE-POISSON_VAGUE" => "VENTE-POISSON_QTE",
             "VENTE-POISSON_QTE" => "VENTE-POISSON_NBRE",
             "VENTE-POISSON_NBRE" => "VENTE-POISSON_PU",
             "VENTE-POISSON_PU" => "VENTE-POISSON_PUKG",
             "VENTE-POISSON_PUKG" => "VENTE-POISSON_MESSAGE",
-            "VENTE-POISSON_MESSAGE" => "VENTE-POISSON_END",
+            "VENTE-POISSON_MESSAGE" => "VENTE-POISSON_RECAP",
+            "VENTE-POISSON_RECAP" => "VENTE-POISSON_END",
+            
             "NOUVELLE-VAGUE_BAC" => "NOUVELLE-VAGUE_PDU",
             "NOUVELLE-VAGUE_PDU" => "NOUVELLE-VAGUE_PU",
             "NOUVELLE-VAGUE_PU" => "NOUVELLE-VAGUE_NBRE",
             "NOUVELLE-VAGUE_NBRE" => "NOUVELLE-VAGUE_MESSAGE",
-            "NOUVELLE-VAGUE_MESSAGE" => "NOUVELLE-VAGUE_END"
+            "NOUVELLE-VAGUE_MESSAGE" => "NOUVELLE-VAGUE_RECAP",
+            "NOUVELLE-VAGUE_RECAP" => "NOUVELLE-VAGUE_END"
         );
         if (isset($liste[$cle])) {
             return $liste[$cle];
