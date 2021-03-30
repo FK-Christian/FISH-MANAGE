@@ -20,7 +20,7 @@ function is_sql_date($date){
 function get_caisse_by_type($type = "CAISSE"){
     $investissement = Investissement::sum('balance');
     $charges = Flux::where('type_flux', '=', "CHARGE")->sum('cout_unite');
-    $ventes = Flux::where('statut', '=', "VENTE")->sum('cout_unite');
+    $ventes = Flux::where('statut', '=', "VENTE")->value(Illuminate\Support\Facades\DB::raw("SUM((cout_unite * nbre)+(cout_kg * qte_gramme/1000))"));
     $achats = Flux::where('statut', '=', "ACHAT")->value(Illuminate\Support\Facades\DB::raw("SUM((cout_unite * nbre)+(cout_kg * qte_gramme/1000))"));
     switch (strtoupper($type)){
         case "CAISSE":
