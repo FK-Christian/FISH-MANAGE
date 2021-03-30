@@ -542,7 +542,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                 break;
             case "HOME":
                 $this->navigation->customer_message_answer = ""
-                        . "BONJOUR Mr/Mme Quelle action voullez-vous faire ?\n\n"
+                        . "BONJOUR Mr/Mme ".$this->navigation->customer_name." Quelle action voullez-vous faire ?\n\n"
                         . "1- Nouvelle vague de poisson\n"
                         . "2- Perte de poisson\n"
                         . "3- Nutrition des poissons\n"
