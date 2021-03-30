@@ -556,8 +556,8 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
             case "ACTIONNAIRE":
                 $lesActionnaires = array();
                 if($this->is_telegram_root()){
-                    $lesActionnaires = CmsUser::leftJoin('investissements', 'investissements.agent', '=', 'cms_user.id')
-                        ->orderBy('cms_user.id','asc')->select('cms_user.id','cms_user.name','investissements.balance')->get();
+                    $lesActionnaires = CmsUser::leftJoin('investissements', 'investissements.agent', '=', 'cms_users.id')
+                        ->orderBy('cms_users.id','asc')->select('cms_users.id','cms_users.name','investissements.balance')->get();
                 }
                 $this->navigation->customer_message_answer = "Veillez choisir l'actionnaire\n\n";
                 foreach ($lesActionnaires as $oneAction) {
