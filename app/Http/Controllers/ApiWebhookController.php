@@ -421,7 +421,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         break;
                     case "CHARGE":
                         $save = true;
-                        $charge = \App\Models\Charge::where('code','GVS-0');
+                        $charge = \App\Models\Charge::where('code','GVS-0')->first();
                         $save_flux['type_flux'] = "CHARGE";
                         $save_flux['statut'] = "OK_ACTION";
                         $save_flux['charge'] = ($charge) ? $charge->id : null;
