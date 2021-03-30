@@ -416,11 +416,11 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         break;
                     case "CAISSE":
                         $this->navigation->customer_message_answer = ""
-                            . "VOLUME DES ACHATS: ". number_format(get_caisse_by_type("ACHAT"), 2, ",", " ")." FCFA\n"
-                            . "VOLUME DES VENTES: ". number_format(get_caisse_by_type("VENTE"), 2, ",", " ")." FCFA\n"
-                            . "VOLUME DES INVESTISSEMENTS: ". number_format(get_caisse_by_type("INVESTISSEMESNT"), 2, ",", " ")." FCFA\n"
-                            . "VOLUME DES CHARGES: ". number_format(get_caisse_by_type("CHARGE"), 2, ",", " ")." FCFA\n\n"
-                            . "CAISSE TOTAL: ". number_format(get_caisse_by_type(), 2, ",", " ")." FCFA\n";                        
+                            . "VOLUME DES ACHATS: ". number_format(get_caisse_by_type("ACHAT"), 0, ",", " ")." FCFA\n"
+                            . "VOLUME DES VENTES: ". number_format(get_caisse_by_type("VENTE"), 0, ",", " ")." FCFA\n"
+                            . "VOLUME DES INVESTISSEMENTS: ". number_format(get_caisse_by_type("INVESTISSEMENT"), 0, ",", " ")." FCFA\n"
+                            . "VOLUME DES CHARGES: ". number_format(get_caisse_by_type("CHARGE"), 0, ",", " ")." FCFA\n\n"
+                            . "CAISSE TOTAL: ". number_format(get_caisse_by_type(), 0, ",", " ")." FCFA\n";                        
                         break;
                     case "INVESTISSEMENT":
                         $actionnaire = Investissement::where('agent',$user_data['actionnaire'])->first();
