@@ -419,6 +419,12 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         $this->update_vague_or_bac_nbre($save_flux['vague'], $save_flux['nbre'], true, false);
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
+                    case "CHARGE":
+                        $save = true;
+                        $save_flux['type_flux'] = "CHARGE";
+                        $save_flux['statut'] = "OK_ACTION";
+                        $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
+                        break;
                     case "CAISSE":
                         $this->navigation->customer_message_answer = ""
                             . "VOLUME DES ACHATS: ". number_format(get_caisse_by_type("ACHAT"), 0, ",", " ")." FCFA\n"
@@ -528,6 +534,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                     $flux = Flux::create($save_flux);
                     $flux->update(array('caisse_apres' => get_caisse_by_type()));
                     notify_after_action_flux($flux);
+                    $this->navigation->customer_message_answer .= "\nMerci de fournir les preuves Flux id = ".$flux->id."\n";
                 }
                 $this->update_data_collected('', '', true);
                 break;
@@ -649,11 +656,16 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
             "HOME_5" => "CHANGEMENT-BAC_BAC",
             "HOME_6" => "VENTE-POISSON_BAC",
             "HOME_7" => "PH0TO-PREUVE_ID",
-            "HOME_8" => "JOURNAL_DATE1",
-            "HOME_9" => "INVESTISSEMENT_ACTIONNAIRE",
-            "HOME_10" => "CAISSE_SECRET",
+            "HOME_8" => "CHARGE_PU",
+            "HOME_9" => "JOURNAL_DATE1",
+            "HOME_10" => "INVESTISSEMENT_ACTIONNAIRE",
+            "HOME_11" => "CAISSE_SECRET",
             
             "CAISSE_SECRET" => "CAISSE_END",
+            
+            "CHARGE_PU" => "CHARGE_MESSAGE",
+            "CHARGE_MESSAGE" => "CHARGE_RECAP",
+            "CHARGE_RECAP" => "CHARGE_END",
             
             "INVESTISSEMENT_ACTIONNAIRE" => "INVESTISSEMENT_PU",
             "INVESTISSEMENT_PU" => "INVESTISSEMENT_MESSAGE",
