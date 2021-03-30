@@ -125,7 +125,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                 $service = $val[0];
                 switch ($step) {
                     case "HOME":
-                        if ((ctype_digit($value) && $value <= 10 && 0 < $value)) {
+                        if ((ctype_digit($value) && $value <= 11 && 0 < $value)) {
                             $this->navigation->customer_next_step = $this->getStepCode("HOME_$value");
                             $this->update_data_collected("home", $value);
                         } else {
@@ -548,9 +548,10 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         . "5- Changement de Bac, tri de poisson\n"
                         . "6- Vente de poisson\n"
                         . "7- Enregistrement photo\n"
-                        . "8- Journal\n"
-                        . "9- investissement\n"
-                        . "10- Caisse actuelle";
+                        . "8- Nouvelle Charge\n"
+                        . "9- Journal\n"
+                        . "10- investissement\n"
+                        . "11- Caisse actuelle";
                 break;
             case "RECAP":
                 $data_recap = $this->get_user_and_dataSaved();
