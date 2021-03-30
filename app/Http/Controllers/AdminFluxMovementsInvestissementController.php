@@ -32,7 +32,7 @@
 			$this->col = [];
 			$this->col[] = ["label"=>"Date Action","name"=>"date_action"];
 			$this->col[] = ["label"=>"Agent","name"=>"agent","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Investissement","name"=>"investissement","join"=>"investissements,balance"];
+			$this->col[] = ["label"=>"Investissement","name"=>"investissement","join"=>"investissements,name"];
 			$this->col[] = ["label"=>"Cout Unite","name"=>"cout_unite"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
