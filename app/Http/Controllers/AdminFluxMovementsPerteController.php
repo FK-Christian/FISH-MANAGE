@@ -31,8 +31,8 @@
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			$this->col[] = ["label"=>"Date Action","name"=>"date_action"];
-			$this->col[] = ["label"=>"Agent","name"=>"agent","join"=>"cms_users,id"];
-			$this->col[] = ["label"=>"Bac Source","name"=>"bac_source"];
+			$this->col[] = ["label"=>"Agent","name"=>"agent","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Bac Source","name"=>"bac_source","join"=>"bacs,name"];
 			$this->col[] = ["label"=>"Qte Gramme","name"=>"qte_gramme"];
 			$this->col[] = ["label"=>"Nbre","name"=>"nbre"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
@@ -47,10 +47,10 @@
 			$this->form[] = ['label'=>'Aliment','name'=>'aliment','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'aliments,name'];
 			$this->form[] = ['label'=>'Agent','name'=>'agent','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_users,name'];
 			$this->form[] = ['label'=>'Date Action','name'=>'date_action','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Type Flux','name'=>'type_flux','type'=>'select2','validation'=>'required|min:1|max:255','width'=>'col-sm-10', 'dataenum'=>''.join(';',config('constants.TYPE_FLUX'))];
+			$this->form[] = ['label'=>'Type Flux','name'=>'type_flux','type'=>'select2','validation'=>'required|min:1|max:255','width'=>'col-sm-10','dataenum'=>'POISSON;ALIMENT;CHARGE;INVESTISSEMENT'];
 			$this->form[] = ['label'=>'Qte Gramme','name'=>'qte_gramme','type'=>'number','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Nbre','name'=>'nbre','type'=>'number','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Statut','name'=>'statut','type'=>'select2','validation'=>'required|min:1|max:255','width'=>'col-sm-10', 'dataenum'=>''.join(';',config('constants.STATUT_FLUX'))];
+			$this->form[] = ['label'=>'Statut','name'=>'statut','type'=>'select2','validation'=>'required|min:1|max:255','width'=>'col-sm-10','dataenum'=>'PERTE;VENTE;ACHAT;CHANGEMENT_BAC;NUTRITION;OK_ACTION'];
 			$this->form[] = ['label'=>'Cout Unite','name'=>'cout_unite','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Cout Kg','name'=>'cout_kg','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Description','name'=>'description','type'=>'textarea','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
@@ -58,21 +58,21 @@
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ["label"=>"Charge","name"=>"charge","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Investissement","name"=>"investissement","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Bac Source","name"=>"bac_source","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Bac Destination","name"=>"bac_destination","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Vague","name"=>"vague","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Aliment","name"=>"aliment","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Agent","name"=>"agent","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Date Action","name"=>"date_action","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
-			//$this->form[] = ["label"=>"Type Flux","name"=>"type_flux","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Qte Gramme","name"=>"qte_gramme","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Nbre","name"=>"nbre","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Statut","name"=>"statut","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Cout Unite","name"=>"cout_unite","type"=>"money","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Cout Kg","name"=>"cout_kg","type"=>"money","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Description","name"=>"description","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ['label'=>'Charge','name'=>'charge','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'charges,name'];
+			//$this->form[] = ['label'=>'Investissement','name'=>'investissement','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'investissements,balance'];
+			//$this->form[] = ['label'=>'Bac Source','name'=>'bac_source','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'bacs,name'];
+			//$this->form[] = ['label'=>'Bac Destination','name'=>'bac_destination','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'bacs,name'];
+			//$this->form[] = ['label'=>'Vague','name'=>'vague','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'vagues,name'];
+			//$this->form[] = ['label'=>'Aliment','name'=>'aliment','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'aliments,name'];
+			//$this->form[] = ['label'=>'Agent','name'=>'agent','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_users,name'];
+			//$this->form[] = ['label'=>'Date Action','name'=>'date_action','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Type Flux','name'=>'type_flux','type'=>'select2','validation'=>'required|min:1|max:255','width'=>'col-sm-10', 'dataenum'=>''.join(';',config('constants.TYPE_FLUX'))];
+			//$this->form[] = ['label'=>'Qte Gramme','name'=>'qte_gramme','type'=>'number','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Nbre','name'=>'nbre','type'=>'number','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Statut','name'=>'statut','type'=>'select2','validation'=>'required|min:1|max:255','width'=>'col-sm-10', 'dataenum'=>''.join(';',config('constants.STATUT_FLUX'))];
+			//$this->form[] = ['label'=>'Cout Unite','name'=>'cout_unite','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Cout Kg','name'=>'cout_kg','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Description','name'=>'description','type'=>'textarea','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			# OLD END FORM
 
 			/* 
