@@ -135,8 +135,13 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         break;
                     case "RECAP":
                         if ((ctype_digit($value) && $value <= 2 && 0 < $value)) {
-                            $this->navigation->customer_next_step = $this->getStepCode($service . "_RECAP");
-                            $this->update_data_collected("recap", $value);
+                            if($value == 1){
+                                $this->navigation->customer_next_step = $this->getStepCode($service . "_RECAP");
+                                $this->update_data_collected("recap", $value);
+                            }else{
+                                $this->navigation->customer_next_step = $this->getStepCode("HOME_HOME");
+                                $this->update_data_collected("home", $value, true);
+                            }
                         } else {
                             $this->navigation->customer_next_step = $this->navigation->customer_current_step;
                             $this->navigation->error = true;
