@@ -601,7 +601,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                                 "Changement de Bac","Vente de poisson","Enregistrement des preuves: photo",
                                 "Enregistrement des Depenses / Charges","Consulter les Enregistrements",
                                 "Enregistrer un apport d'investisseur", "Consulter la caisse actuelle");
-                            $this->navigation->customer_message_answer .= "ACTION: ".$action_list[$val-1]."\n";
+                            $this->navigation->customer_message_answer .= "ACTION: ".$action_list[$val-1]."\n\n";
                         break;
                         default :
                             $this->navigation->customer_message_answer .= str_replace("_", "-", $cle)." - ".str_replace("_", "-", $val)."\n";
