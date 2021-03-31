@@ -560,7 +560,41 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                 $this->navigation->customer_message_answer = ""
                         . "Approuvez vous ces informations ? \n\n";
                 foreach ($data_recap as $cle => $val){
-                    $this->navigation->customer_message_answer .= str_replace("_", "-", $cle)." - ".str_replace("_", "-", $val)."\n";
+                    switch (strtoupper($cle)){
+                        case "actionnaire":
+                            $actionnaire = Investissement::where('agent',$val)->first();
+                            $this->navigation->customer_message_answer .= "Actionnaire: ".$actionnaire->name." (".$actionnaire->balance.")\n"; 
+                        break;
+                        case "date_fin":
+                            $this->navigation->customer_message_answer .= "Date Fin: $val \n"; 
+                        break;
+                        case "date_debut":
+                            $this->navigation->customer_message_answer .= "Date Debut: $val \n"; 
+                        break;
+                        case "aliment":
+                            $aliment = Aliment::where('id',$val)->first();
+                            $this->navigation->customer_message_answer .= "Aliment: ".$aliment->name." (".$aliment->stock_en_g.")\n"; 
+                        break;
+                        case "id":
+                            $flux = Flux::where('id',$val)->first();
+                            $this->navigation->customer_message_answer .= "FLUX: ".$flux->type_flux." (".$flux->statut.")\n"; 
+                        break;
+                        case "vague":
+                            $vague = Vague::where('id',$val)->first();
+                            $this->navigation->customer_message_answer .= "VAGUE: ".$vague->name." (".$vague->code.")\n"; 
+                        break;
+                        case "bac_source":
+                            $bac = Bac::where('id',$val)->first();
+                            $this->navigation->customer_message_answer .= "VAGUE: ".$bac->name." (".$bac->code.")\n"; 
+                        break;
+                        case "bac_destination":
+                            $bac = Bac::where('id',$val)->first();
+                            $this->navigation->customer_message_answer .= "VAGUE: ".$bac->name." (".$bac->code.")\n"; 
+                        break;
+                        default :
+                            $this->navigation->customer_message_answer .= str_replace("_", "-", $cle)." - ".str_replace("_", "-", $val)."\n";
+                        break;
+                    }
                 }
                 $this->navigation->customer_message_answer .= "\n\n"
                         . "1- OUI\n"
@@ -572,7 +606,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
             case "ACTIONNAIRE":
                 $lesActionnaires = array();
                 if($this->is_telegram_root()){
-                    $lesActionnaires = CmsUser::leftJoin('investissements', 'investissements.agent', '=', 'cms_users.id')
+                    $lesActionnaires = Investissement::leftJoin('cms_users', 'investissements.agent', '=', 'cms_users.id')
                         ->orderBy('cms_users.id','asc')->select('cms_users.id','cms_users.name','investissements.balance')->get();
                 }
                 $this->navigation->customer_message_answer = "Veillez choisir l'actionnaire\n\n";
