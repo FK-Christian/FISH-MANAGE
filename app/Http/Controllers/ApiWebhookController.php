@@ -560,10 +560,14 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                 $this->navigation->customer_message_answer = ""
                         . "Approuvez vous ces informations ? \n\n";
                 foreach ($data_recap as $cle => $val){
-                    switch (strtoupper($cle)){
+                    switch (strtolower($cle)){
                         case "actionnaire":
                             $actionnaire = Investissement::where('agent',$val)->first();
                             $this->navigation->customer_message_answer .= "Actionnaire: ".$actionnaire->name." (".$actionnaire->balance.")\n"; 
+                        break;
+                        case "agent":
+                            $agent = CmsUser::where('id',$val)->first();
+                            $this->navigation->customer_message_answer .= "Responsable: ".$agent->name." \n"; 
                         break;
                         case "date_fin":
                             $this->navigation->customer_message_answer .= "Date Fin: $val \n"; 
