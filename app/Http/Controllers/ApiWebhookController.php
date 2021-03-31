@@ -595,6 +595,14 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                             $bac = Bac::where('id',$val)->first();
                             $this->navigation->customer_message_answer .= "VAGUE: ".$bac->name." (".$bac->code.")\n"; 
                         break;
+                        case "home":
+                            $action_list = array("Nouvelle vague de poisson","Perte de poisson",
+                                "Nutrition de poisson","Achat aliment pour poisson",
+                                "Changement de Bac","Vente de poisson","Enregistrement des preuves: photo",
+                                "Enregistrement des Depenses / Charges","Consulter les Enregistrements",
+                                "Enregistrer un apport d'investisseur", "Consulter la caisse actuelle");
+                            $this->navigation->customer_message_answer .= "ACTION: ".$action_list[$val-1]."\n";
+                        break;
                         default :
                             $this->navigation->customer_message_answer .= str_replace("_", "-", $cle)." - ".str_replace("_", "-", $val)."\n";
                         break;
