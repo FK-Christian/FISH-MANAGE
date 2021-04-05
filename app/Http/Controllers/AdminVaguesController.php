@@ -30,13 +30,14 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
+			$this->col[] = ["label"=>"Nom","name"=>"name"];
 			$this->col[] = ["label"=>"Agent","name"=>"agent","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Date Entree","name"=>"date_entree"];
-			$this->col[] = ["label"=>"Date Sortie","name"=>"date_sortie"];
-			$this->col[] = ["label"=>"Date Prevu Sortie","name"=>"date_prevu_sortie"];
-			$this->col[] = ["label"=>"Nom","name"=>"name"];
 			$this->col[] = ["label"=>"Poids Unite(g)","name"=>"poids_unite"];
 			$this->col[] = ["label"=>"Prix Unite","name"=>"prix_unite"];
+			$this->col[] = ["label"=>"Nbre Entree","name"=>"nbre_entree"];
+			$this->col[] = ["label"=>"Nbre Sortie","name"=>"nbre_sortie"];
+			$this->col[] = ["label"=>"Nbre Perte","name"=>"nbre_perte"];
 			$this->col[] = ["label"=>"Cout Production","name"=>"cout_production"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
@@ -47,7 +48,7 @@
 			$this->form[] = ['label'=>'Date Sortie','name'=>'date_sortie','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Date Prevu Sortie','name'=>'date_prevu_sortie','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Name','name'=>'name','type'=>'text','validation'=>'required|string|min:3|max:70','width'=>'col-sm-10','placeholder'=>'You can only enter the letter only'];
-			$this->form[] = ['label'=>'Cout Production','name'=>'cout_production','validation'=>'required','width'=>'col-sm-9'];
+			$this->form[] = ['label'=>'Cout Production','name'=>'cout_production','type'=>'text','validation'=>'required','width'=>'col-sm-9'];
 			$this->form[] = ['label'=>'Poids Unite','name'=>'poids_unite','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Prix Unite','name'=>'prix_unite','type'=>'number','validation'=>'required','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Nbre Entree','name'=>'nbre_entree','type'=>'number','validation'=>'required','width'=>'col-sm-10'];
@@ -63,6 +64,7 @@
 			//$this->form[] = ['label'=>'Date Sortie','name'=>'date_sortie','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-10'];
 			//$this->form[] = ['label'=>'Date Prevu Sortie','name'=>'date_prevu_sortie','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-10'];
 			//$this->form[] = ['label'=>'Name','name'=>'name','type'=>'text','validation'=>'required|string|min:3|max:70','width'=>'col-sm-10','placeholder'=>'You can only enter the letter only'];
+			//$this->form[] = ['label'=>'Cout Production','name'=>'cout_production','validation'=>'required','width'=>'col-sm-9'];
 			//$this->form[] = ['label'=>'Poids Unite','name'=>'poids_unite','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			//$this->form[] = ['label'=>'Prix Unite','name'=>'prix_unite','type'=>'number','validation'=>'required','width'=>'col-sm-10'];
 			//$this->form[] = ['label'=>'Nbre Entree','name'=>'nbre_entree','type'=>'number','validation'=>'required','width'=>'col-sm-10'];
