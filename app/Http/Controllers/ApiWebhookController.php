@@ -11,6 +11,7 @@ use App\Models\CmsUser;
 use App\Models\Preuve;
 use App\Models\Flux;
 use App\Models\Investissement;
+use App\Models\Bac_and_vangue;
 
 class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiController {
 
@@ -79,6 +80,66 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
     private function update_aliment_stock($id, $qte) {
         $aliment = Aliment::findOrFail($id);
         $aliment->update(array('stock_en_g' => $aliment->stock_en_g + $qte));
+    }
+    
+    private function update_bac_vague($bac_id, $nbre, $vague = null, $bac_dest = null){
+        if($vague == null){ //revoir 
+            $bac_vague_source = Bac_and_vangue::where('bac',$bac_id)->first();
+            $nbre_final_source = $bac_vague_source->nbre - $nbre;
+            $bac_vague_source->update(array('nbre' => $nbre_final_source));
+            
+            $vague = $bac_vague_source->vague;
+            $bac_vague_destination = Bac_and_vangue::where('bac',$bac_dest)->where('vague',$vague)->first();
+            if($bac_vague_destination){
+                $nbre_final = $bac_vague_destination->nbre + $nbre;
+                $bac_vague_destination->update(array('nbre' => $nbre_final));
+            }else{
+                $toSave['bac'] = $bac_dest;
+                $toSave['vague'] = $vague;
+                $toSave['nbre'] = $nbre;
+                Bac_and_vangue::create($toSave);
+            }
+        }else{
+            $bac_vague = Bac_and_vangue::where('bac',$bac_id)->where('vague',$vague)->first();
+            if($bac_vague){
+                $nbre_final = $bac_vague->nbre + $nbre;
+                $bac_vague->update(array('nbre' => $nbre_final));
+            }else{
+                $toSave['bac'] = $bac_id;
+                $toSave['vague'] = $vague;
+                $toSave['nbre'] = $nbre;
+                Bac_and_vangue::create($toSave);
+            }
+        }
+    }
+    
+    private function update_production_cost($cout, $bac = null){
+        $lesVagues = array(); $nbre = 1;
+        if($bac == null){
+            $nbre_b = Vague::sum('nbre_entree - nbre_sortie - nbre_perte');
+            $nbre = ($nbre_b > 0) ? $nbre_b : 1;
+            $lesVagues = Vague::all();
+            $cout_unite = ceil($cout/$nbre);
+            foreach ($lesVagues as $vague){
+                $nouveau_cout_production = $vague->cout_production + (($vague->nbre_entree - $vague->nbre_sortie - $vague->nbre_perte)*$cout_unite);
+                $vague->update(array('cout_production' => $nouveau_cout_production));
+            }
+        }else{
+            $lesBac_vagues = Bac_and_vangue::where('bac',$bac)->get();
+            $nbre_b = Bac_and_vangue::where('bac',$bac)->sum('nbre');
+            $nbre = ($nbre_b > 0) ? $nbre_b : 1;
+            $cout_unite = ceil($cout/$nbre);
+            foreach ($lesBac_vagues as $vague_bac){
+                $vague = Vague::where('id',$vague_bac->vague)->first();
+                $nouveau_cout_production = $vague->cout_production + ($vague_bac->nbre*$cout_unite);
+                $vague->update(array('cout_production' => $nouveau_cout_production));
+            }
+        }
+    }
+    
+    private function get_prix_unite_aliment($aliment_id){
+        $cout = Flux::where('aliment',$aliment_id)->where('statut',"ACHAT")->where('type_flux',"ALIMENT")->fisrt();
+        return ($cout) ? $cout->cout_kg : 0;
     }
     
     private function get_user_and_dataSaved() {
@@ -409,6 +470,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         $save_flux['statut'] = "ACHAT";
                         $save_flux['qte_gramme'] = $vague_save['poids_unite'];
                         $this->update_vague_or_bac_nbre($save_flux['bac_source'], $save_flux['nbre']);
+                        $this->update_bac_vague($save_flux['bac_source'],$save_flux['nbre'],$save_flux['vague']);
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
                     case "PERTE-POISSON":
@@ -417,6 +479,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         $save_flux['statut'] = "PERTE";
                         $this->update_vague_or_bac_nbre($save_flux['bac_source'], (-1) * $save_flux['nbre']);
                         $this->update_vague_or_bac_nbre($save_flux['vague'], $save_flux['nbre'], true, false);
+                        $this->update_bac_vague($save_flux['bac_source'],(-1)*$save_flux['nbre'],$save_flux['vague']);
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
                     case "CHARGE":
@@ -425,6 +488,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         $save_flux['type_flux'] = "CHARGE";
                         $save_flux['statut'] = "OK_ACTION";
                         $save_flux['charge'] = ($charge) ? $charge->id : null;
+                        $this->update_production_cost($save_flux['cout_unite']);
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
                     case "CAISSE":
@@ -448,6 +512,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         $save = true;
                         $save_flux['type_flux'] = "ALIMENT";
                         $save_flux['statut'] = "NUTRITION";
+                        $this->update_production_cost($save_flux['qte_gramme']*$this->get_prix_unite_aliment($save_flux['aliment'])/1000);
                         $this->update_aliment_stock($save_flux['aliment'], (-1) * $save_flux['qte_gramme']);
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
@@ -465,6 +530,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         $save_flux['statut'] = "CHANGEMENT_BAC";
                         $this->update_vague_or_bac_nbre($save_flux['bac_source'], (-1) * $save_flux['nbre']);
                         $this->update_vague_or_bac_nbre($save_flux['bac_destination'], $save_flux['nbre']);
+                        $this->update_bac_vague($save_flux['bac_source'],$save_flux['nbre'],null,$save_flux['bac_destination']);
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
                     case "VENTE-POISSON":
@@ -473,6 +539,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
                         $save_flux['statut'] = "VENTE";
                         $this->update_vague_or_bac_nbre($save_flux['bac_source'], (-1) * $save_flux['nbre']);
                         $this->update_vague_or_bac_nbre($save_flux['vague'], $save_flux['nbre'], true);
+                        $this->update_bac_vague($save_flux['bac_source'],(-1)*$save_flux['nbre'],$save_flux['vague']);
                         $this->navigation->customer_message_answer = "Votre enregistrement a ete fait avec succes\n";
                         break;
                     case "PH0TO-PREUVE":

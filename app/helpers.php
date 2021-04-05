@@ -71,7 +71,7 @@ function sendTelegramMessage($messages) {
 }
 
 function telegramChat($chatId, $message) {
-    $token = "1600668637:AAGtb7ToeQ2WLF9-nZPnxGEodWc7K7UKoBQ";
+    $token = env("TELEGRAM_TOKEN");
     $url = "https://api.telegram.org/bot$token/sendMessage?";
     if (is_array($message)) {
         $retour = array();
@@ -95,7 +95,7 @@ function telegramChat($chatId, $message) {
 }
 
 function telegramGetFile($chatresponse) {
-    $token = "1600668637:AAGtb7ToeQ2WLF9-nZPnxGEodWc7K7UKoBQ";
+    $token = env("TELEGRAM_TOKEN");
     $url = "https://api.telegram.org/bot$token/getFile?";
     if (isset($chatresponse['message']['photo'])) {
         $size = 0;
@@ -139,6 +139,10 @@ function notify_after_action_flux($flux, $is_insert = true) {
         $temp = Template::where('type_notif',"ENTREE_ALIMENT")->first();
     } else if ($flux->type_flux == "POISSON" && $flux->statut == "CHANGEMENT_BAC") {
         $temp = Template::where('type_notif',"CHANGEMENT_BAC")->first();
+    }else if ($flux->type_flux == "INVESTISSEMENT") {
+        $temp = Template::where('type_notif',"INVESTISSEMENT")->first();
+    }else if ($flux->type_flux == "CHARGE") {
+        $temp = Template::where('type_notif',"CHARGE")->first();
     }
     $template = ($temp) ? "" : $temp->model_notif;
     $template = str_replace("var_id", $flux->id, $template);
@@ -152,7 +156,7 @@ function notify_after_action_flux($flux, $is_insert = true) {
     $template = str_replace("var_cout_kg", $flux->cout_kg, $template);
     if ($flux->bac_source != null) {
         $bac = Bac::where('id',$flux->bac_source)->first();
-        if (!empty($bac)) {
+        if ($bac) {
             $template = str_replace("var_bac", $bac->name . " (" . $bac->type_bac . ")", $template);
             $atelier = Atelier::where('id',$bac->atelier)->first();
             $template = str_replace("var_atelier", $atelier->name . " (" . $atelier->code . ")", $template);
@@ -160,7 +164,7 @@ function notify_after_action_flux($flux, $is_insert = true) {
     }
     if ($flux->bac_destination != null) {
         $bac = Bac::where('id',$flux->bac_destination)->first();
-        if (!empty($bac)) {
+        if ($bac) {
             $template = str_replace("var_bac2", $bac->name . " (" . $bac->type_bac . ")", $template);
             $atelier = Atelier::where('id',$bac->atelier)->first();
             $template = str_replace("var_atelier", $atelier->name . " (" . $atelier->code . ")", $template);
@@ -168,20 +172,32 @@ function notify_after_action_flux($flux, $is_insert = true) {
     }
     if ($flux->agent != null) {
         $agent = CmsUser::where('id',$flux->agent)->first();
-        if (!empty($agent)) {
+        if ($agent) {
             $template = str_replace("var_agent", $agent->name, $template);
         }
     }
     if ($flux->vague != null) {
         $vague = Vague::where('id',$flux->vague)->first();
-        if (!empty($vague)) {
+        if ($vague) {
             $template = str_replace("var_vague", $vague->name . " (" . $vague->code . ")", $template);
         }
     }
     if ($flux->aliment != null) {
         $aliment = Aliment::where('id',$flux->aliment)->first();
-        if (!empty($vague)) {
+        if ($aliment) {
             $template = str_replace("var_aliment", $aliment->name . " (" . $aliment->code . ")", $template);
+        }
+    }
+    if ($flux->investissement != null) {
+        $investissement = Investissement::where('id',$flux->investissement)->first();
+        if ($investissement) {
+            $template = str_replace("var_investissement", $investissement->name . " (" . $investissement->balance . ")", $template);
+        }
+    }
+    if ($flux->charge != null) {
+        $charge = App\Models\Charge::where('id',$flux->charge)->first();
+        if ($charge) {
+            $template = str_replace("var_charge", $charge->name . " (" . $charge->type_charge . ")", $template);
         }
     }
     $template = str_replace("var_", "_var_", $template);
