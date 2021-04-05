@@ -37,6 +37,7 @@
 			$this->col[] = ["label"=>"Nom","name"=>"name"];
 			$this->col[] = ["label"=>"Poids Unite(g)","name"=>"poids_unite"];
 			$this->col[] = ["label"=>"Prix Unite","name"=>"prix_unite"];
+			$this->col[] = ["label"=>"Cout Production","name"=>"cout_production"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -46,6 +47,7 @@
 			$this->form[] = ['label'=>'Date Sortie','name'=>'date_sortie','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Date Prevu Sortie','name'=>'date_prevu_sortie','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Name','name'=>'name','type'=>'text','validation'=>'required|string|min:3|max:70','width'=>'col-sm-10','placeholder'=>'You can only enter the letter only'];
+			$this->form[] = ['label'=>'Cout Production','name'=>'cout_production','validation'=>'required','width'=>'col-sm-9'];
 			$this->form[] = ['label'=>'Poids Unite','name'=>'poids_unite','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Prix Unite','name'=>'prix_unite','type'=>'number','validation'=>'required','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Nbre Entree','name'=>'nbre_entree','type'=>'number','validation'=>'required','width'=>'col-sm-10'];
@@ -62,11 +64,11 @@
 			//$this->form[] = ['label'=>'Date Prevu Sortie','name'=>'date_prevu_sortie','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-10'];
 			//$this->form[] = ['label'=>'Name','name'=>'name','type'=>'text','validation'=>'required|string|min:3|max:70','width'=>'col-sm-10','placeholder'=>'You can only enter the letter only'];
 			//$this->form[] = ['label'=>'Poids Unite','name'=>'poids_unite','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-			//$this->form[] = ['label'=>'Prix Unite','name'=>'prix_unite','type'=>'money','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-			//$this->form[] = ['label'=>'Nbre Entree','name'=>'nbre_entree','type'=>'number','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			//$this->form[] = ['label'=>'Nbre Sortie','name'=>'nbre_sortie','type'=>'number','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			//$this->form[] = ['label'=>'Nbre Perte','name'=>'nbre_perte','type'=>'number','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			//$this->form[] = ['label'=>'Description','name'=>'description','type'=>'multitext','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Prix Unite','name'=>'prix_unite','type'=>'number','validation'=>'required','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Nbre Entree','name'=>'nbre_entree','type'=>'number','validation'=>'required','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Nbre Sortie','name'=>'nbre_sortie','type'=>'number','validation'=>'required','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Nbre Perte','name'=>'nbre_perte','type'=>'number','validation'=>'required','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Description','name'=>'description','type'=>'textarea','validation'=>'required','width'=>'col-sm-10'];
 			# OLD END FORM
 
 			/* 
