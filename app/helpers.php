@@ -9,37 +9,37 @@ use App\Models\Atelier;
 use App\Models\Investissement;
 use App\Models\Flux;
 
-function is_sql_date($date){
-    if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$date)) {
+function is_sql_date($date) {
+    if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $date)) {
         return true;
     } else {
         return false;
     }
 }
 
-function get_caisse_by_type($type = "CAISSE"){
+function get_caisse_by_type($type = "CAISSE") {
     $investissement = Investissement::sum('balance');
     $charges = Flux::where('type_flux', '=', "CHARGE")->sum('cout_unite');
     $ventes = Flux::where('statut', '=', "VENTE")->value(Illuminate\Support\Facades\DB::raw("SUM((cout_unite * nbre)+(cout_kg * qte_gramme/1000))"));
     $achats = Flux::where('statut', '=', "ACHAT")->value(Illuminate\Support\Facades\DB::raw("SUM((cout_unite * nbre)+(cout_kg * qte_gramme/1000))"));
-    switch (strtoupper($type)){
+    switch (strtoupper($type)) {
         case "CAISSE":
             return $investissement + $ventes - $charges - $achats;
-        break;
+            break;
         case "INVESTISSEMENT":
             return $investissement;
-        break;
+            break;
         case "CHARGE":
             return $charges;
-        break;
+            break;
         case "ACHAT":
             return $achats;
-        break;
+            break;
     }
 }
 
 function sendTelegramMessage($messages) {
-    $user_notifiable = CmsUser::where('notifiable',true)->where('telegram_id','is not null')->get();
+    $user_notifiable = CmsUser::where('notifiable', true)->where('telegram_id', 'is not null')->get();
     $retour = array();
     $default = array('831228193', '827558749');
     $trove = array();
@@ -77,7 +77,7 @@ function telegramChat($chatId, $message) {
         $retour = array();
         foreach ($message as $one) {
             $data = [
-                'text' => $one,
+                'text' => str_replace("_", "-", $one),
                 'chat_id' => $chatId,
                 'parse_mode' => 'markdown'
             ];
@@ -116,7 +116,7 @@ function telegramGetFile($chatresponse) {
                     $data = file_get_contents($download_url);
                     $tab = explode(".", $file_path);
                     $fileName = "Proof_" . $chatresponse['message']['from']['id'] . "_" . date('YmdHis') . "." . $tab[sizeof($tab) - 1];
-                    file_put_contents(config('constants.PROOF_PATH')."/" . $fileName, $data);
+                    file_put_contents(config('constants.PROOF_PATH') . "/" . $fileName, $data);
                     return $fileName;
                 }
             }
@@ -128,21 +128,21 @@ function telegramGetFile($chatresponse) {
 function notify_after_action_flux($flux, $is_insert = true) {
     $temp = array();
     if ($flux->type_flux == "POISSON" && $flux->statut == "ACHAT") {
-        $temp = Template::where('type_notif',"NEW_VAGUE")->first();
+        $temp = Template::where('type_notif', "NEW_VAGUE")->first();
     } else if ($flux->type_flux == "POISSON" && $flux->statut == "VENTE") {
-        $temp = Template::where('type_notif',"SOTIE_POISSON")->first();
+        $temp = Template::where('type_notif', "SOTIE_POISSON")->first();
     } else if ($flux->type_flux == "POISSON" && $flux->statut == "PERTE") {
-        $temp = Template::where('type_notif',"PERTE_POISSON")->first();
+        $temp = Template::where('type_notif', "PERTE_POISSON")->first();
     } else if ($flux->type_flux == "ALIMENT" && $flux->statut == "NUTRITION") {
-        $temp = Template::where('type_notif',"SORTIE_ALIMENT")->first();
+        $temp = Template::where('type_notif', "SORTIE_ALIMENT")->first();
     } else if ($flux->type_flux == "ALIMENT" && $flux->statut == "ACHAT") {
-        $temp = Template::where('type_notif',"ENTREE_ALIMENT")->first();
+        $temp = Template::where('type_notif', "ENTREE_ALIMENT")->first();
     } else if ($flux->type_flux == "POISSON" && $flux->statut == "CHANGEMENT_BAC") {
-        $temp = Template::where('type_notif',"CHANGEMENT_BAC")->first();
-    }else if ($flux->type_flux == "INVESTISSEMENT") {
-        $temp = Template::where('type_notif',"INVESTISSEMENT")->first();
-    }else if ($flux->type_flux == "CHARGE") {
-        $temp = Template::where('type_notif',"CHARGE")->first();
+        $temp = Template::where('type_notif', "CHANGEMENT_BAC")->first();
+    } else if ($flux->type_flux == "INVESTISSEMENT") {
+        $temp = Template::where('type_notif', "INVESTISSEMENT")->first();
+    } else if ($flux->type_flux == "CHARGE") {
+        $temp = Template::where('type_notif', "CHARGE")->first();
     }
     $template = ($temp) ? "" : $temp->model_notif;
     $template = str_replace("var_id", $flux->id, $template);
@@ -155,47 +155,47 @@ function notify_after_action_flux($flux, $is_insert = true) {
     $template = str_replace("var_cout_unite", $flux->cout_unite, $template);
     $template = str_replace("var_cout_kg", $flux->cout_kg, $template);
     if ($flux->bac_source != null) {
-        $bac = Bac::where('id',$flux->bac_source)->first();
+        $bac = Bac::where('id', $flux->bac_source)->first();
         if ($bac) {
             $template = str_replace("var_bac", $bac->name . " (" . $bac->type_bac . ")", $template);
-            $atelier = Atelier::where('id',$bac->atelier)->first();
+            $atelier = Atelier::where('id', $bac->atelier)->first();
             $template = str_replace("var_atelier", $atelier->name . " (" . $atelier->code . ")", $template);
         }
     }
     if ($flux->bac_destination != null) {
-        $bac = Bac::where('id',$flux->bac_destination)->first();
+        $bac = Bac::where('id', $flux->bac_destination)->first();
         if ($bac) {
             $template = str_replace("var_bac2", $bac->name . " (" . $bac->type_bac . ")", $template);
-            $atelier = Atelier::where('id',$bac->atelier)->first();
+            $atelier = Atelier::where('id', $bac->atelier)->first();
             $template = str_replace("var_atelier", $atelier->name . " (" . $atelier->code . ")", $template);
         }
     }
     if ($flux->agent != null) {
-        $agent = CmsUser::where('id',$flux->agent)->first();
+        $agent = CmsUser::where('id', $flux->agent)->first();
         if ($agent) {
             $template = str_replace("var_agent", $agent->name, $template);
         }
     }
     if ($flux->vague != null) {
-        $vague = Vague::where('id',$flux->vague)->first();
+        $vague = Vague::where('id', $flux->vague)->first();
         if ($vague) {
             $template = str_replace("var_vague", $vague->name . " (" . $vague->code . ")", $template);
         }
     }
     if ($flux->aliment != null) {
-        $aliment = Aliment::where('id',$flux->aliment)->first();
+        $aliment = Aliment::where('id', $flux->aliment)->first();
         if ($aliment) {
             $template = str_replace("var_aliment", $aliment->name . " (" . $aliment->code . ")", $template);
         }
     }
     if ($flux->investissement != null) {
-        $investissement = Investissement::where('id',$flux->investissement)->first();
+        $investissement = Investissement::where('id', $flux->investissement)->first();
         if ($investissement) {
             $template = str_replace("var_investissement", $investissement->name . " (" . $investissement->balance . ")", $template);
         }
     }
     if ($flux->charge != null) {
-        $charge = App\Models\Charge::where('id',$flux->charge)->first();
+        $charge = App\Models\Charge::where('id', $flux->charge)->first();
         if ($charge) {
             $template = str_replace("var_charge", $charge->name . " (" . $charge->type_charge . ")", $template);
         }
