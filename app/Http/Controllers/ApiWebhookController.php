@@ -138,7 +138,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
     }
     
     private function get_prix_unite_aliment($aliment_id){
-        $cout = Flux::where('aliment',$aliment_id)->where('statut',"ACHAT")->where('type_flux',"ALIMENT")->fisrt();
+        $cout = Flux::where('aliment',$aliment_id)->where('statut',"ACHAT")->where('type_flux',"ALIMENT")->first();
         return ($cout) ? $cout->cout_kg : 0;
     }
     
