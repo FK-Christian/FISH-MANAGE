@@ -86,7 +86,7 @@ function telegramChat($chatId, $message) {
         return $retour;
     } else {
         $data = [
-            'text' => $message,
+            'text' => str_replace("_", "-", $message),
             'chat_id' => $chatId,
             'parse_mode' => 'markdown'
         ];
