@@ -116,7 +116,7 @@ class ApiWebhookController extends \crocodicstudio\crudbooster\controllers\ApiCo
     private function update_production_cost($cout, $bac = null){
         $lesVagues = array(); $nbre = 1;
         if($bac == null){
-            $nbre_b = Vague::sum('nbre_entree - nbre_sortie - nbre_perte');
+            $nbre_b = (Vague::sum('nbre_entree') - Vague::sum('nbre_sortie') - Vague::sum('nbre_perte'));
             $nbre = ($nbre_b > 0) ? $nbre_b : 1;
             $lesVagues = Vague::all();
             $cout_unite = ceil($cout/$nbre);
